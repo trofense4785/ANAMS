@@ -7,7 +7,7 @@
 package org.UI;
 
 import utils.Utils;
-import org.Model.Empresa;
+import org.Model.Instituicao;
 import org.Controller.EspecificarTipoCurso_Controller;
 
 /**
@@ -16,13 +16,13 @@ import org.Controller.EspecificarTipoCurso_Controller;
  */
 public class EspecificarTipoCurso_UI
 {
-    private Empresa empresa;
+    private Instituicao instituicao;
     private EspecificarTipoCurso_Controller controller;
 
-    public EspecificarTipoCurso_UI(Empresa empresa)
+    public EspecificarTipoCurso_UI(Instituicao instituicao)
     {
-        this.empresa = empresa;
-        controller = new EspecificarTipoCurso_Controller(empresa);
+        this.instituicao = instituicao;
+        controller = new EspecificarTipoCurso_Controller(instituicao);
     }
 
     public void run()

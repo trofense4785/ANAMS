@@ -6,7 +6,7 @@
 
 package org.Controller;
 
-import org.Model.Empresa;
+import org.Model.Instituicao;
 import org.Model.TipoCurso;
 
 /**
@@ -15,16 +15,16 @@ import org.Model.TipoCurso;
  */
 public class EspecificarTipoCurso_Controller
 {
-    private final Empresa empresa;
+    private final Instituicao instituicao;
     private TipoCurso tipoCurso;
     
-    public EspecificarTipoCurso_Controller(Empresa empresa)
+    public EspecificarTipoCurso_Controller(Instituicao instituicao)
     {
-        this.empresa= empresa;
+        this.instituicao = instituicao;
     }
     public void novoTipoCurso()
     {
-        this.tipoCurso = empresa.novoTipoCurso();
+        this.tipoCurso = instituicao.novoTipoCurso();
     }
     public void setDados(String sigla, String descricao){
         this.tipoCurso.setSigla(sigla);
@@ -38,7 +38,7 @@ public class EspecificarTipoCurso_Controller
     
     public boolean especificarTipoCurso()
     {
-        return this.empresa.especificarTipoCurso(this.tipoCurso);
+        return this.instituicao.especificarTipoCurso(this.tipoCurso);
     }
 
     public String getTipoCursoAsString()

@@ -13,11 +13,11 @@ import java.util.List;
  *
  * @author Dulce Mota <mdm@isep.ipp.pt>
  */
-public class Empresa
+public class Instituicao
 {
     private final List<TipoCurso> lstTiposCurso;
     // Completar
-    public Empresa()
+    public Instituicao()
     {
         this.lstTiposCurso = new ArrayList<>();
     }

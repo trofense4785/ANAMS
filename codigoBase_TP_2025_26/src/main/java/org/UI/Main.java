@@ -6,7 +6,7 @@
 
 package org.UI;
 
-import org.Model.Empresa;
+import org.Model.Instituicao;
 
 /**
  *
@@ -19,9 +19,9 @@ public class Main
     {
         try
         {   // Construção da empresa
-            Empresa empresa = new Empresa();
+            Instituicao instituicao = new Instituicao();
 
-            MenuInicial_UI uiMenu = new MenuInicial_UI(empresa);
+            MenuInicial_UI uiMenu = new MenuInicial_UI(instituicao);
 
             uiMenu.run();
         }

@@ -7,21 +7,21 @@
 package org.UI;
 
 import java.io.IOException;
-import org.Model.Empresa;
+import org.Model.Instituicao;
 import utils.Utils;
-import org.Model.*;
+
 /**
  *
  * @author Dulce Mota <mdm@isep.ipp.pt>
  */
 public class MenuInicial_UI
 {
-    private Empresa empresa;
+    private Instituicao instituicao;
     private String opcao;
 
-    public MenuInicial_UI(Empresa empresa)
+    public MenuInicial_UI(Instituicao instituicao)
     {
-        this.empresa = empresa;
+        this.instituicao = instituicao;
     }
     public void run() throws IOException
     {
@@ -39,31 +39,31 @@ public class MenuInicial_UI
 
             if( opcao.equals("1") )
             {
-                MenuCad_UI ui = new MenuCad_UI(empresa);
+                MenuCad_UI ui = new MenuCad_UI(instituicao);
                 ui.run();
             }
             else
             if( opcao.equals("2") )
             {
-                MenuAdm_UI ui = new MenuAdm_UI(empresa);
+                MenuAdm_UI ui = new MenuAdm_UI(instituicao);
                 ui.run();
             }
             else
             if( opcao.equals("3") )
             {
-                MenuCA_UI ui = new MenuCA_UI(empresa);
+                MenuCA_UI ui = new MenuCA_UI(instituicao);
                 ui.run();
             }
             else
             if( opcao.equals("4") )
             {
-                MenuFor_UI ui = new MenuFor_UI(empresa);
+                MenuFor_UI ui = new MenuFor_UI(instituicao);
                 ui.run();
             }
             else
             if( opcao.equals("5") )
             {
-                MenuAlu_UI ui = new MenuAlu_UI(empresa);
+                MenuAlu_UI ui = new MenuAlu_UI(instituicao);
                 ui.run();
             }
         }

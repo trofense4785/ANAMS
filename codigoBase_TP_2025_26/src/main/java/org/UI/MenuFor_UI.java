@@ -3,19 +3,19 @@ package org.UI;
 import java.io.IOException;
 
 import utils.Utils;
-import org.Model.Empresa;
+import org.Model.Instituicao;
 /**
  *
  * @author Dulce Mota <mdm@isep.ipp.pt>
  */
 public class MenuFor_UI
 {
-    private Empresa empresa;
+    private Instituicao instituicao;
     private String opcao;
 
-    public MenuFor_UI(Empresa empresa)
+    public MenuFor_UI(Instituicao instituicao)
     {
-        this.empresa = empresa;
+        this.instituicao = instituicao;
     }
     public void run() throws IOException
     {

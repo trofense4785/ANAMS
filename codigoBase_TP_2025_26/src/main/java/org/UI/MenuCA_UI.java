@@ -3,19 +3,19 @@ package org.UI;
 import java.io.IOException;
 
 import utils.Utils;
-import org.Model.Empresa;
+import org.Model.Instituicao;
 /**
  *
  * @author Dulce Mota <mdm@isep.ipp.pt>
  */
 public class MenuCA_UI
 {
-    private Empresa empresa;
+    private Instituicao instituicao;
     private String opcao;
 
-    public MenuCA_UI(Empresa empresa)
+    public MenuCA_UI(Instituicao instituicao)
     {
-        this.empresa = empresa;
+        this.instituicao = instituicao;
     }
     public void run() throws IOException
     {
@@ -34,7 +34,7 @@ public class MenuCA_UI
 
             if( opcao.equals("1") )
             {
-                EspecificarTipoCurso_UI ui = new EspecificarTipoCurso_UI(empresa);
+                EspecificarTipoCurso_UI ui = new EspecificarTipoCurso_UI(instituicao);
                 ui.run();
             }
             else
