@@ -16,6 +16,12 @@ public class Curso implements Calculavel {
     private List<Modulo> modulos;
     private List<Formador> formadoresResponsaveis; // Novo requisito 'a'
 
+    public Curso() {
+        this.modulos = new ArrayList<>();
+        this.formadoresResponsaveis = new ArrayList<>();
+        this.estado = 0; // Estado inicial "A iniciar"
+    }
+
     public Curso(String titulo, String sigla, TipoCurso tipo, String descricao, LocalDate dataInicio, LocalDate dataTermino) {
         this.titulo = titulo;
         this.sigla = sigla;
@@ -74,9 +80,76 @@ public class Curso implements Calculavel {
     }
 
     // Getters and Setters
-    public int getEstado() { return estado; }
-    public void setEstado(int estado) { this.estado = estado; }
-    public List<Modulo> getModulos() { return modulos; }
-    public List<Formador> getFormadoresResponsaveis() { return formadoresResponsaveis; }
-    // ...
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public String getSigla() {
+        return sigla;
+    }
+
+    public void setSigla(String sigla) {
+        this.sigla = sigla;
+    }
+
+    public TipoCurso getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoCurso tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public LocalDate getDataInicio() {
+        return dataInicio;
+    }
+
+    public void setDataInicio(LocalDate dataInicio) {
+        this.dataInicio = dataInicio;
+    }
+
+    public LocalDate getDataTermino() {
+        return dataTermino;
+    }
+
+    public void setDataTermino(LocalDate dataTermino) {
+        this.dataTermino = dataTermino;
+    }
+
+    public int getEstado() {
+        return estado;
+    }
+
+    public void setEstado(int estado) {
+        this.estado = estado;
+    }
+
+    public List<Modulo> getModulos() {
+        return modulos;
+    }
+
+    public void setModulos(List<Modulo> modulos) {
+        this.modulos = modulos;
+    }
+
+    public List<Formador> getFormadoresResponsaveis() {
+        return formadoresResponsaveis;
+    }
+
+    public void setFormadoresResponsaveis(List<Formador> formadoresResponsaveis) {
+        this.formadoresResponsaveis = formadoresResponsaveis;
+    }
 }
