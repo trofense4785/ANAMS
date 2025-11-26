@@ -91,6 +91,10 @@ public class Modulo implements Calculavel {
         return formadorResponsavel;
     }
 
+    public void setFormadorResponsavel(Formador formadorResponsavel) {
+        this.formadorResponsavel = formadorResponsavel;
+    }
+
     public double getPonderacao() {
         return ponderacao;
     }

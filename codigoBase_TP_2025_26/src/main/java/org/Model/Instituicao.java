@@ -7,6 +7,7 @@
 package org.Model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -41,7 +42,7 @@ public class Instituicao
         return instance;
     }
 
-// TIPO CURSO
+// UC2
 
     public TipoCurso novoTipoCurso(String sigla, String descricao) {
         return new TipoCurso(sigla, descricao);
@@ -73,7 +74,7 @@ public class Instituicao
     }
 
 
-// CURSO
+// UC4
 
     public Curso novoCurso(String titulo, String sigla, TipoCurso tipo, String descricao, LocalDate dataInicio, LocalDate dataTermino) {
         return new Curso(titulo, sigla, tipo, descricao, dataInicio, dataTermino);
@@ -102,7 +103,7 @@ public class Instituicao
         return lstFormadores;
     }
 
-// CA
+// UC1
 
     public CA getCA() {
         return this.ca;
@@ -139,7 +140,7 @@ public class Instituicao
         return false;
     }
 
-// FORMADOR
+// UC3
 
     public Formador novoFormador(String nome, LocalDate dataNascimento, String cc, String email, String contacto, String areaFormacao) {
         return new Formador(nome, dataNascimento, cc, email, contacto, areaFormacao);
@@ -186,6 +187,57 @@ public class Instituicao
         return false;
     }
 
+// UC5
+    public boolean validarDisponibilidadeFormador(Formador formador, SessaoModulo novaSessao) {
+        if (formador == null) return false;
+
+        for (Curso c : lstCursos) {
+            for (Modulo m : c.getListaModulos()) {
+            // Só verificamos módulos onde este formador é o responsável
+                if (m.getFormadorResponsavel() != null &&
+                    m.getFormadorResponsavel().equals(formador)) {
+
+                    for (SessaoModulo sessaoExistente : m.getLstSessoes()) {
+                        if (haSobreposicao(sessaoExistente, novaSessao)){
+                            return false; // Está ocupado!
+                        }
+                    }
+                }
+            }
+        }
+        return true; // Está livre
+    }
+
+    public boolean validarDisponibilidadeSala(String sala, SessaoModulo novaSessao) {
+        for (Curso c : lstCursos) {
+            for (Modulo m : c.getListaModulos()) {
+                for (SessaoModulo sessaoExistente : m.getLstSessoes()) {
+                    // Se for a mesma sala E houver sobreposição de horas
+                    if (sessaoExistente.getSala().equalsIgnoreCase(sala) &&
+                            haSobreposicao(sessaoExistente, novaSessao)) {
+                        return false; // Sala ocupada!
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean haSobreposicao(SessaoModulo s1, SessaoModulo s2) {
+        // Lógica temporal: (Inicio1 < Fim2) E (Inicio2 < Fim1)
+        LocalDateTime inicio1 = s1.getDataHoraInicio();
+        LocalDateTime fim1 = s1.getDataHoraFim();
+
+        LocalDateTime inicio2 = s2.getDataHoraInicio();
+        LocalDateTime fim2 = s2.getDataHoraFim();
+
+        return inicio1.isBefore(fim2) && inicio2.isBefore(fim1);
+    }
+
+    // Getter necessário para o Controller
+    public List<Curso> getLstCursos() {
+        return lstCursos;
+    }
 
 
 }
