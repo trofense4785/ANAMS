@@ -42,9 +42,9 @@ public class Instituicao
 
 // TIPO CURSO
 
-    public TipoCurso novoTipoCurso()
+    public TipoCurso novoTipoCurso(String sigla, String descricao)
     {
-        return new TipoCurso();
+        return new TipoCurso(sigla, descricao);
     }
     public boolean especificarTipoCurso(TipoCurso tipoCurso)
     {

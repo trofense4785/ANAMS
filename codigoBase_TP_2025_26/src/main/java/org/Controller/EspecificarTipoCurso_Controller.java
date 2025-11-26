@@ -20,29 +20,25 @@ public class EspecificarTipoCurso_Controller
     
     public EspecificarTipoCurso_Controller(Instituicao instituicao)
     {
-        this.instituicao = instituicao;
+        this.instituicao = Instituicao.getInstance();
     }
-    public void novoTipoCurso()
+    public void novoTipoCurso(String sigla, String descricao)
     {
-        this.tipoCurso = instituicao.novoTipoCurso();
-    }
-    public void setDados(String sigla, String descricao){
-        this.tipoCurso.setSigla(sigla);
-        this.tipoCurso.setDescricao(descricao);
-    }
-    
-    public String getSigla()
-    {
-        return this.tipoCurso.getSigla();
-    }
-    
-    public boolean especificarTipoCurso()
-    {
-        return this.instituicao.especificarTipoCurso(this.tipoCurso);
+        this.tipoCurso = instituicao.novoTipoCurso(sigla, descricao);
+        instituicao.validaTipoCurso(this.tipoCurso);
     }
 
-    public String getTipoCursoAsString()
-    {
-        return this.tipoCurso.toString();
+
+    public boolean registarTipoCurso() {
+        // Valida unicidade e guarda
+        return this.instituicao.registarTipoCurso(this.tipoCurso);
+    }
+
+    // Auxiliar para a UI mostrar o que vai ser gravado
+    public String getTipoCursoString() {
+        if (this.tipoCurso != null) {
+            return this.tipoCurso.toString();
+        }
+        return "";
     }
 }

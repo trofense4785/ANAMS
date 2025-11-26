@@ -45,11 +45,17 @@ public class TipoCurso
     }
 
     // Validação local
-    public boolean valida()
-    {
-        // Completar
+    public boolean valida() {
+        if (sigla == null || sigla.trim().isEmpty()) {
+            throw new IllegalArgumentException("A sigla do tipo de curso é obrigatória.");
+        }
+        if (descricao == null || descricao.trim().isEmpty()) {
+            throw new IllegalArgumentException("A descrição é obrigatória.");
+        }
         return true;
     }
+
+
     public String toString(){
         StringBuilder sb = new StringBuilder();
         sb.append("Sigla: "+ sigla +"\n");
