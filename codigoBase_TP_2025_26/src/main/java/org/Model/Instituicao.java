@@ -6,6 +6,7 @@
 
 package org.Model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,13 +110,13 @@ public class Instituicao
         return true;
     }
 
-    public Curso novoCurso(String titulo, String sigla, TipoCurso tipo, LocalDate ini, LocalDate fim) {
-        return new Curso(titulo, sigla, tipo, ini, fim);
+    public Curso novoCurso(String titulo, String sigla, TipoCurso tipo, String descricao, LocalDate dataInicio, LocalDate dataTermino) {
+        return new Curso(titulo, sigla, tipo, descricao, dataInicio, dataTermino);
     }
 
     public boolean validaCurso(Curso curso) {
         // Validação de Unicidade (Sigla)
-        for (Curso c : listaCursos) {
+        for (Curso c : lstCursos) {
             if (c.getSigla().equalsIgnoreCase(curso.getSigla())) return false;
         }
         return true;

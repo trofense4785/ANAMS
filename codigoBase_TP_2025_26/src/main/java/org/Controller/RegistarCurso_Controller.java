@@ -1,9 +1,6 @@
 package org.Controller;
 
-import org.Model.Curso;
-import org.Model.Formador;
-import org.Model.Instituicao;
-import org.Model.TipoCurso;
+import org.Model.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,25 +14,39 @@ public class RegistarCurso_Controller {
         this.instituicao = instituicao;
     }
 
+    public List<TipoCurso> getTiposCurso() {
+        return instituicao.getLstTiposCurso();
+    }
 
-    public void novoCurso() {
-        this.curso = instituicao.novoCurso();
+    public List<Formador> getListaFormadores() {
+        return instituicao.getLstFormadores();
     }
 
 
-    public void setDados(String titulo, String sigla, TipoCurso tipo, String descricao,
-                         LocalDate dataInicio, LocalDate dataTermino) {
+    public void novoCurso(String titulo, String sigla, TipoCurso tipo, String descricao, LocalDate dataInicio, LocalDate dataTermino) {
+        this.curso = instituicao.novoCurso(titulo, sigla, tipo, descricao, dataInicio, dataTermino);
 
-        this.curso.setTitulo(titulo);
-        this.curso.setSigla(sigla);
-        this.curso.setTipo(tipo);
-        this.curso.setDescricao(descricao);
-        this.curso.setDataInicio(dataInicio);
-        this.curso.setDataTermino(dataTermino);
+        if (!instituicao.validaCurso(this.curso)) {
+            throw new IllegalArgumentException("Curso com esta sigla já existe.");
+        }
     }
 
+    public boolean adicionarModulo(String codigo, String titulo, double cargaHoraria, LocalDate dataInicio, LocalDate dataConclusao, Formador formadorResponsavel, double ponderacao, List<SessaoModulo> lstSessoes, List<Classificacao> lstClassificacoes) {
+        if (this.curso == null) return false;
 
-    public void adicionarFormadorResponsavel(Formador formador) {
+        // Curso cria o módulo (Creator)
+        Modulo m = this.curso.novoModulo(codigo, titulo, cargaHoraria, dataInicio, dataConclusao, formadorResponsavel, ponderacao, lstSessoes, lstClassificacoes);
+
+        // Nota: Aqui a UI deveria chamar outro método para adicionar Sessões ao 'm'
+        // antes de o adicionar ao curso, devido à regra "minimo 3 sessoes".
+        // Para simplificar, assumimos que as sessões são adicionadas num sub-passo.
+
+        return this.curso.addModulo(m);
+
+
+
+
+    public void adicionarFormadorResponsavel (Formador formador) {
         if (this.curso != null) {
             this.curso.adicionarFormadorResponsavel(formador);
         }

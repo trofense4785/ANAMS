@@ -51,9 +51,9 @@ public class Curso implements Calculavel {
     }
 
     // Método para adicionar formador responsável
-    public void adicionarFormadorResponsavel(Formador formador) {
-        if (!formadoresResponsaveis.contains(formador)) {
-            formadoresResponsaveis.add(formador);
+    public void addResponsavel(Formador formador) {
+        if (formador != null && !formadoresResponsaveis.contains(formador)) {
+            this.formadoresResponsaveis.add(formador);
         }
     }
 
