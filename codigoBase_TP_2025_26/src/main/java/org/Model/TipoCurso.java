@@ -40,6 +40,10 @@ public class TipoCurso
         this.descricao = descricao;
     }
 
+    public String getDescricao() {
+        return descricao;
+    }
+
     // Validação local
     public boolean valida()
     {

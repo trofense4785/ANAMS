@@ -15,16 +15,22 @@ import java.util.List;
  */
 public class Instituicao
 {
-    private final List<TipoCurso> lstTiposCurso;
-    private CA ca;
+    private List<TipoCurso> lstTiposCurso = new ArrayList<>();
+    private CA ca = null; // Apenas um CA
+    private List<Formador> lstFormadores = new ArrayList<>();
+    private List<Curso> lstCursos = new ArrayList<>();
+    private List<Candidato> lstCandidatos = new ArrayList<>();
 
     // Completar
     public Instituicao()
     {
         this.lstTiposCurso = new ArrayList<>();
         this.ca = null;
+        this.lstCursos = new ArrayList<>();
+        this.lstFormadores = new ArrayList<>();
+        this.lstCandidatos = new ArrayList<>();
     }
-  
+
     public TipoCurso novoTipoCurso()
     {
         return new TipoCurso();
@@ -38,7 +44,7 @@ public class Instituicao
         }
         return false;
     }
-        
+
     private void adicionarTipoCurso(TipoCurso tipoCurso){
         lstTiposCurso.add(tipoCurso);
     }
@@ -99,10 +105,19 @@ public class Instituicao
         return new Curso();
     }
 
+    public boolean adicionarCurso(Curso curso) {
+        // Apenas a Instituicao decide se o curso pode ser adicionado
+        if (this.valida(curso)) { // A Instituicao chama o seu próprio valida(Curso)
+            this.lstCursos.add(curso);
+            return true;
+        }
+        return false;
+    }
+
     public Candidato novoCandidato() {
         return new Candidato();
     }
-   
+
     // Completar com outras funcionalidades
     
     public String toString(){

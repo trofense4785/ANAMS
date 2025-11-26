@@ -1,22 +1,23 @@
 package org.Model;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 public class SessaoModulo {
-    private LocalDate dataSessao;
-    private double duracaoHoras;
-    private String localizacaoSala;
+    private LocalDateTime dataHoraInicio;
+    private int duracaoHoras;
+    private String sala;
 
-    public SessaoModulo(LocalDate dataSessao, double duracaoHoras, String localizacaoSala) {
-        this.dataSessao = dataSessao;
+    public SessaoModulo(LocalDateTime dataHoraInicio, int duracaoHoras, String sala) {
+        if (duracaoHoras <= 0) throw new IllegalArgumentException("Duração deve ser positiva.");
+        if (sala == null || sala.isEmpty()) throw new IllegalArgumentException("Sala obrigatória.");
+
+        this.dataHoraInicio = dataHoraInicio;
         this.duracaoHoras = duracaoHoras;
-        this.localizacaoSala = localizacaoSala;
+        this.sala = sala;
     }
 
-    // Getters and Setters
-    public LocalDate getDataSessao() { return dataSessao; }
-    public double getDuracaoHoras() { return duracaoHoras; }
-    public String getLocalizacaoSala() { return localizacaoSala; }
-    // ...
+    // Getters
+    public LocalDateTime getDataHoraInicio() { return dataHoraInicio; }
+    public LocalDateTime getDataHoraFim() { return dataHoraInicio.plusHours(duracaoHoras); }
+    public String getSala() { return sala; }
 }
