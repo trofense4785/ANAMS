@@ -13,14 +13,9 @@ public class Curso implements Calculavel {
     private LocalDate dataTermino;
     private int estado; // 0-"A iniciar", 1-"Ativo", 2-"Suspenso", 3-"Cancelado", 4-"Concluído"
 
-    private List<Modulo> modulos;
+    private List<Modulo> listaModulos;
     private List<Formador> formadoresResponsaveis; // Novo requisito 'a'
 
-    public Curso() {
-        this.modulos = new ArrayList<>();
-        this.formadoresResponsaveis = new ArrayList<>();
-        this.estado = 0; // Estado inicial "A iniciar"
-    }
 
     public Curso(String titulo, String sigla, TipoCurso tipo, String descricao, LocalDate dataInicio, LocalDate dataTermino) {
         this.titulo = titulo;
@@ -30,17 +25,29 @@ public class Curso implements Calculavel {
         this.dataInicio = dataInicio;
         this.dataTermino = dataTermino;
         this.estado = 0; // Estado inicial "A iniciar"
-        this.modulos = new ArrayList<>();
+        this.listaModulos = new ArrayList<>();
         this.formadoresResponsaveis = new ArrayList<>();
     }
 
+    public Curso() {
+
+    }
+
     // Método para adicionar módulos (com verificação do estado - requisito 'b')
-    public boolean adicionarModulo(Modulo modulo) {
-        // Só é possível adicionar módulos a cursos que ainda não iniciaram (estado 0)
-        if (this.estado == 0) {
-            return modulos.add(modulo);
+    public boolean addModulo(Modulo m) {
+        if (m.valida()) { // Valida regras do módulo (ex: min 3 sessões)
+            // Valida se soma das ponderações não passa 100%
+            double totalPonderacao = listaModulos.stream().mapToDouble(Modulo::getPonderacao).sum();
+            if (totalPonderacao + m.getPonderacao() > 100) {
+                throw new IllegalArgumentException("Soma das ponderações excede 100%.");
+            }
+            return listaModulos.add(m);
         }
         return false;
+    }
+
+    public Modulo novoModulo(String codigo, String titulo, double cargaHoraria, LocalDate dataInicio, LocalDate dataConclusao, Formador formadorResponsavel, double ponderacao, List<SessaoModulo> lstSessoes, List<Classificacao> lstClassificacoes) {
+        return new Modulo(codigo, titulo, cargaHoraria, dataInicio, dataConclusao, formadorResponsavel, ponderacao, lstSessoes, lstClassificacoes);
     }
 
     // Método para adicionar formador responsável
@@ -50,106 +57,94 @@ public class Curso implements Calculavel {
         }
     }
 
+    public boolean validarEstado() {
+        return !listaModulos.isEmpty();
+    }
+
     // Implementação da interface Calculavel (calcula a nota final do curso)
     @Override
     public double calcularNota() {
-        double notaFinal = 0.0;
-        double ponderacaoTotal = 0.0;
-
-        for (Modulo modulo : modulos) {
-            // Nota do módulo (chamando o calcularNota do Módulo)
-            double notaModulo = modulo.calcularNota();
-
-            // Só considera módulos que têm nota e ponderação > 0
-            if (notaModulo >= 0 && modulo.getPonderacao() > 0) {
-                notaFinal += notaModulo * (modulo.getPonderacao() / 100.0);
-                ponderacaoTotal += modulo.getPonderacao();
-            } else if (notaModulo < 0) {
-                // Se um módulo ainda não tem classificação, a nota final não está disponível.
-                return -1.0; // Usar -1 ou um Optional para indicar indisponibilidade
-            }
+        // IT2: Nota final calculada automaticamente baseada nos módulos e ponderações [cite: 120]
+        double notaFinal = 0;
+        for (Modulo m : listaModulos) {
+            notaFinal += m.calcularNota() * (m.getPonderacao() / 100.0);
         }
-
-        // A nota final só é disponibilizada se o aluno tiver notas a todos os módulos
-        if (modulos.isEmpty() || ponderacaoTotal != 100.0) {
-            // Assumindo que 100% de ponderação é obrigatório para um curso concluído/avaliado
-            return -1.0;
-        }
-
         return notaFinal;
     }
 
-    // Getters and Setters
-
     public String getTitulo() {
         return titulo;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
     }
 
     public String getSigla() {
         return sigla;
     }
 
-    public void setSigla(String sigla) {
-        this.sigla = sigla;
-    }
-
     public TipoCurso getTipo() {
         return tipo;
-    }
-
-    public void setTipo(TipoCurso tipo) {
-        this.tipo = tipo;
     }
 
     public String getDescricao() {
         return descricao;
     }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
     public LocalDate getDataInicio() {
         return dataInicio;
-    }
-
-    public void setDataInicio(LocalDate dataInicio) {
-        this.dataInicio = dataInicio;
     }
 
     public LocalDate getDataTermino() {
         return dataTermino;
     }
 
-    public void setDataTermino(LocalDate dataTermino) {
-        this.dataTermino = dataTermino;
-    }
-
     public int getEstado() {
         return estado;
     }
 
-    public void setEstado(int estado) {
-        this.estado = estado;
-    }
-
-    public List<Modulo> getModulos() {
-        return modulos;
-    }
-
-    public void setModulos(List<Modulo> modulos) {
-        this.modulos = modulos;
+    public List<Modulo> getListaModulos() {
+        return listaModulos;
     }
 
     public List<Formador> getFormadoresResponsaveis() {
         return formadoresResponsaveis;
     }
 
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public void setSigla(String sigla) {
+        this.sigla = sigla;
+    }
+
+    public void setTipo(TipoCurso tipo) {
+        this.tipo = tipo;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public void setDataInicio(LocalDate dataInicio) {
+        this.dataInicio = dataInicio;
+    }
+
+    public void setDataTermino(LocalDate dataTermino) {
+        this.dataTermino = dataTermino;
+    }
+
+    public void setEstado(int estado) {
+        this.estado = estado;
+    }
+
+    public void setListaModulos(List<Modulo> listaModulos) {
+        this.listaModulos = listaModulos;
+    }
+
     public void setFormadoresResponsaveis(List<Formador> formadoresResponsaveis) {
         this.formadoresResponsaveis = formadoresResponsaveis;
     }
 }
+
+
+
+

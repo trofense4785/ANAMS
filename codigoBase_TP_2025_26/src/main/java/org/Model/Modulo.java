@@ -16,7 +16,7 @@ public class Modulo implements Calculavel {
     private List<SessaoModulo> lstSessoes; // Horário por sessão (requisito 'c')
     private List<Classificacao> lstClassificacoes; // Associação com a classificação do aluno
 
-    public Modulo(String titulo, double cargaHoraria, LocalDate dataInicio, LocalDate dataConclusao, Formador formadorResponsavel, double ponderacao) {
+    public Modulo(String codigo, String titulo, double cargaHoraria, LocalDate dataInicio, LocalDate dataConclusao, Formador formadorResponsavel, double ponderacao, List<SessaoModulo>lstSessoes, List<Classificacao> lstClassificacoes) {
         this.codigo = gerarCodigo(); // Lógica de geração de código
         this.titulo = titulo;
         this.cargaHoraria = cargaHoraria;
@@ -85,5 +85,12 @@ public class Modulo implements Calculavel {
 
     public List<Classificacao> getLstClassificacoes() {
         return lstClassificacoes;
+    }
+
+    public void setPonderacao(double ponderacao) {
+        if(ponderacao < 0 || ponderacao>100) {
+            throw new IllegalArgumentException("Ponderação deve ser entre 0 e 100.");
+        }
+        this.ponderacao = ponderacao;
     }
 }

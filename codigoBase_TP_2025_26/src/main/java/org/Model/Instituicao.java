@@ -48,6 +48,10 @@ public class Instituicao
     private void adicionarTipoCurso(TipoCurso tipoCurso){
         lstTiposCurso.add(tipoCurso);
     }
+
+    public List<TipoCurso> getLstTiposCurso() {
+        return lstTiposCurso;
+    }
     // Validação global
     public boolean valida(TipoCurso tipoCurso) {
         boolean resp = false;
@@ -77,6 +81,10 @@ public class Instituicao
         return new Formador();
     }
 
+    public List<Formador> getLstFormadores() {
+        return lstFormadores;
+    }
+
     public CA novoCA() {
         return new CA();
     }
@@ -101,15 +109,21 @@ public class Instituicao
         return true;
     }
 
-    public Curso novoCurso() {
-        return new Curso();
+    public Curso novoCurso(String titulo, String sigla, TipoCurso tipo, LocalDate ini, LocalDate fim) {
+        return new Curso(titulo, sigla, tipo, ini, fim);
     }
 
-    public boolean adicionarCurso(Curso curso) {
-        // Apenas a Instituicao decide se o curso pode ser adicionado
-        if (this.valida(curso)) { // A Instituicao chama o seu próprio valida(Curso)
-            this.lstCursos.add(curso);
-            return true;
+    public boolean validaCurso(Curso curso) {
+        // Validação de Unicidade (Sigla)
+        for (Curso c : listaCursos) {
+            if (c.getSigla().equalsIgnoreCase(curso.getSigla())) return false;
+        }
+        return true;
+    }
+
+    public boolean registarCurso(Curso curso) {
+        if (validaCurso(curso) && curso.validarEstado()) {
+            return listaCursos.add(curso);
         }
         return false;
     }
@@ -117,6 +131,8 @@ public class Instituicao
     public Candidato novoCandidato() {
         return new Candidato();
     }
+
+
 
     // Completar com outras funcionalidades
     
