@@ -9,6 +9,7 @@ package org.Model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -42,50 +43,35 @@ public class Instituicao
 
 // TIPO CURSO
 
-    public TipoCurso novoTipoCurso(String sigla, String descricao)
-    {
+    public TipoCurso novoTipoCurso(String sigla, String descricao) {
         return new TipoCurso(sigla, descricao);
     }
-    public boolean especificarTipoCurso(TipoCurso tipoCurso)
-    {
-        if (this.valida(tipoCurso))
-        {
-           adicionarTipoCurso(tipoCurso);
-           return true;
+
+    // 2. Validação Global (Unicidade)
+    public boolean validaTipoCurso(TipoCurso tipo) {
+        if (tipo == null) return false;
+
+        // Regra: Sigla tem de ser única
+        for (TipoCurso t : lstTiposCurso) {
+            if (t.getSigla().equalsIgnoreCase(tipo.getSigla())) {
+                throw new IllegalArgumentException("Erro: Já existe um tipo de curso com a sigla " + tipo.getSigla());
+            }
         }
-        return false;
+        return true;
     }
 
-    private void adicionarTipoCurso(TipoCurso tipoCurso){
-        lstTiposCurso.add(tipoCurso);
+    // 3. Gravação
+    public boolean registarTipoCurso(TipoCurso tipo) {
+        if (tipo.valida() && validaTipoCurso(tipo)) {
+            return lstTiposCurso.add(tipo);
+        }
+        return false;
     }
 
     public List<TipoCurso> getLstTiposCurso() {
         return lstTiposCurso;
     }
-    // Validação global
-    public boolean valida(TipoCurso tipoCurso) {
-        boolean resp = false;
 
-        // 1. Validação Local
-        if (tipoCurso.valida()) {
-
-            // 2. Validação Global (Unicidade da Sigla)
-            boolean siglaUnica = true;
-            for (TipoCurso tc : lstTiposCurso) {
-                if (tc.getSigla().equalsIgnoreCase(tipoCurso.getSigla())) {
-                    siglaUnica = false;
-                    break;
-                }
-            }
-
-            // Se a validação local passou E a sigla é única
-            if (siglaUnica) {
-                resp = true;
-            }
-        }
-        return resp;
-    }
 
 // CURSO
 
@@ -94,9 +80,13 @@ public class Instituicao
     }
 
     public boolean validaCurso(Curso curso) {
-        // Validação de Unicidade (Sigla)
+        if (curso == null) return false;
+
+        // Validação de Unicidade da Sigla
         for (Curso c : lstCursos) {
-            if (c.getSigla().equalsIgnoreCase(curso.getSigla())) return false;
+            if (c.getSigla().equalsIgnoreCase(curso.getSigla())) {
+                return false;
+            }
         }
         return true;
     }
@@ -149,16 +139,53 @@ public class Instituicao
         return false;
     }
 
+// FORMADOR
 
-
-    // Completar com outras funcionalidades
-    
-    public String toString(){
-        StringBuilder sb = new StringBuilder();
-        sb.append("Instituição: \n");
-        sb.append("Lista de tipos de cursos: "+ lstTiposCurso.toString()+"\n");
-        return sb.toString();
+    public Formador novoFormador(String nome, LocalDate dataNascimento, String cc, String email, String contacto, String areaFormacao) {
+        return new Formador(nome, dataNascimento, cc, email, contacto, areaFormacao);
     }
+
+    public boolean validaFormador(Formador formador) {
+        if (formador == null) return false;
+        if (!formador.valida()) return false; // Validação local
+
+        for (Formador f : lstFormadores) {
+            if (f.getCc().equals(formador.getCc())) {
+                throw new IllegalArgumentException("Erro: CC já registado noutro formador.");
+            }
+            if (f.getEmail().equalsIgnoreCase(formador.getEmail())) {
+                throw new IllegalArgumentException("Erro: Email já registado noutro formador.");
+            }
+        }
+        return true;
+    }
+
+    public boolean registarFormador(Formador formador) {
+        if (validaFormador(formador)) {
+            // 1. Gerar ID Único Automático (Requisito 99)
+            // Exemplo: "F" + número sequencial (F1, F2...)
+            String novoId = "FOR" + (lstFormadores.size() + 1);
+            formador.setIdFormador(novoId);
+
+            // 2. Gerar Credenciais (Requisito 99)
+            String username = formador.getEmail(); // Usar email como login
+            String password = UUID.randomUUID().toString().substring(0, 8); // Pass aleatória
+
+            Credenciais creds = new Credenciais(username, password);
+            formador.setCredenciais(creds);
+
+            // 3. Adicionar à lista
+            boolean adicionou = lstFormadores.add(formador);
+
+            if (adicionou) {
+                // Simular envio de email (console log)
+                System.out.println(">> Email enviado a " + formador.getEmail() + " | Pass: " + password);
+            }
+            return adicionou;
+        }
+        return false;
+    }
+
 
 
 }

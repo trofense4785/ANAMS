@@ -32,15 +32,18 @@ public class Curso implements Calculavel {
 
     // Método para adicionar módulos (com verificação do estado - requisito 'b')
     public boolean addModulo(Modulo m) {
-        if (m.valida()) { // Valida regras do módulo (ex: min 3 sessões)
-            // Valida se soma das ponderações não passa 100%
-            double totalPonderacao = listaModulos.stream().mapToDouble(Modulo::getPonderacao).sum();
-            if (totalPonderacao + m.getPonderacao() > 100) {
-                throw new IllegalArgumentException("Soma das ponderações excede 100%.");
-            }
-            return listaModulos.add(m);
+        // 1. Validar se o módulo cumpre as regras dele (ex: min 3 sessões) [cite: 11]
+        if (!m.valida()) {
+            return false;
         }
-        return false;
+
+        // 2. Validar Soma de Ponderações (IT2)
+        double somaAtual = listaModulos.stream().mapToDouble(Modulo::getPonderacao).sum();
+        if (somaAtual + m.getPonderacao() > 100) {
+            throw new IllegalArgumentException("A soma das ponderações dos módulos não pode exceder 100%.");
+        }
+
+        return listaModulos.add(m);
     }
 
     public Modulo novoModulo(String codigo, String titulo, double cargaHoraria, LocalDate dataInicio, LocalDate dataConclusao, Formador formadorResponsavel, double ponderacao, List<SessaoModulo> lstSessoes, List<Classificacao> lstClassificacoes) {
@@ -69,28 +72,8 @@ public class Curso implements Calculavel {
         return notaFinal;
     }
 
-    public String getTitulo() {
-        return titulo;
-    }
-
     public String getSigla() {
         return sigla;
-    }
-
-    public TipoCurso getTipo() {
-        return tipo;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public LocalDate getDataInicio() {
-        return dataInicio;
-    }
-
-    public LocalDate getDataTermino() {
-        return dataTermino;
     }
 
     public int getEstado() {
@@ -99,46 +82,6 @@ public class Curso implements Calculavel {
 
     public List<Modulo> getListaModulos() {
         return listaModulos;
-    }
-
-    public List<Formador> getFormadoresResponsaveis() {
-        return formadoresResponsaveis;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
-    public void setSigla(String sigla) {
-        this.sigla = sigla;
-    }
-
-    public void setTipo(TipoCurso tipo) {
-        this.tipo = tipo;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public void setDataInicio(LocalDate dataInicio) {
-        this.dataInicio = dataInicio;
-    }
-
-    public void setDataTermino(LocalDate dataTermino) {
-        this.dataTermino = dataTermino;
-    }
-
-    public void setEstado(int estado) {
-        this.estado = estado;
-    }
-
-    public void setListaModulos(List<Modulo> listaModulos) {
-        this.listaModulos = listaModulos;
-    }
-
-    public void setFormadoresResponsaveis(List<Formador> formadoresResponsaveis) {
-        this.formadoresResponsaveis = formadoresResponsaveis;
     }
 }
 

@@ -15,6 +15,7 @@ public class Modulo implements Calculavel {
 
     private List<SessaoModulo> lstSessoes; // Horário por sessão (requisito 'c')
     private List<Classificacao> lstClassificacoes; // Associação com a classificação do aluno
+    private static int contador = 1;
 
     public Modulo(String codigo, String titulo, double cargaHoraria, LocalDate dataInicio, LocalDate dataConclusao, Formador formadorResponsavel, double ponderacao, List<SessaoModulo>lstSessoes, List<Classificacao> lstClassificacoes) {
         this.codigo = gerarCodigo(); // Lógica de geração de código
@@ -23,8 +24,8 @@ public class Modulo implements Calculavel {
         this.dataInicio = dataInicio;
         this.dataConclusao = dataConclusao;
         this.formadorResponsavel = formadorResponsavel;
-        this.ponderacao = ponderacao;
-        this.lstSessoes = new ArrayList<>();
+        setPonderacao(ponderacao);
+        this.lstSessoes = (lstSessoes != null) ? lstSessoes : new ArrayList<>();
         this.lstClassificacoes = new ArrayList<>(); // A classificação é definida mais tarde
     }
 
@@ -33,8 +34,10 @@ public class Modulo implements Calculavel {
     }
 
     // Adiciona uma sessão, garantindo o mínimo de 3 sessões (requisito 'c')
-    public boolean adicionarSessao(SessaoModulo sessao) {
-        return this.lstSessoes.add(sessao);
+    public void adicionarSessao(SessaoModulo sessao) {
+        if (sessao != null) {
+            this.lstSessoes.add(sessao);
+        }
     }
 
     // Verificação de requisito de mínimo de sessões (pode ser feita no Controller/Service)
@@ -45,10 +48,23 @@ public class Modulo implements Calculavel {
         return true;
     }
 
+    public void adicionarClassificacao(Classificacao classificacao) {
+        if (classificacao != null) {
+            this.lstClassificacoes.add(classificacao);
+        }
+    }
+
     // Implementação da interface Calculavel (a nota do módulo é a nota da Classificacao associada)
     @Override
     public double calcularNota() {
-       return 0.0;
+        // Exemplo: Retornar a média das notas lançadas (apenas ilustrativo)
+        if (lstClassificacoes.isEmpty()) return 0.0;
+
+        double soma = 0;
+        for (Classificacao c : lstClassificacoes) {
+            soma += c.getNota();
+        }
+        return soma / lstClassificacoes.size();
     }
 
     public String getCodigo() {
