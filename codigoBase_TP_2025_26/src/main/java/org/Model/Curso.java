@@ -29,9 +29,6 @@ public class Curso implements Calculavel {
         this.formadoresResponsaveis = new ArrayList<>();
     }
 
-    public Curso() {
-
-    }
 
     // Método para adicionar módulos (com verificação do estado - requisito 'b')
     public boolean addModulo(Modulo m) {

@@ -8,6 +8,7 @@ import java.util.List;
 public class RegistarCurso_Controller {
     private final Instituicao instituicao;
     private Curso curso; // Entidade em estado
+    private Formador formador;
 
 
     public RegistarCurso_Controller(Instituicao instituicao) {
@@ -42,20 +43,20 @@ public class RegistarCurso_Controller {
         // Para simplificar, assumimos que as sessões são adicionadas num sub-passo.
 
         return this.curso.addModulo(m);
+    }
 
 
 
-
-    public void adicionarFormadorResponsavel (Formador formador) {
+    public void adicionarFormadorResponsavel(Formador formador) {
         if (this.curso != null) {
-            this.curso.adicionarFormadorResponsavel(formador);
+            this.curso.addResponsavel(formador);
         }
     }
 
 
     public boolean registarCurso() {
         // Validação e Adição são feitas dentro do método adicionarCurso() da Instituicao
-        return this.instituicao.adicionarCurso(this.curso);
+        return this.instituicao.registarCurso(this.curso);
     }
 
 
@@ -73,5 +74,4 @@ public class RegistarCurso_Controller {
     public Curso getCursoEmRegisto() {
         return this.curso;
     }
-}
 }

@@ -16,11 +16,12 @@ import java.util.List;
  */
 public class Instituicao
 {
-    private List<TipoCurso> lstTiposCurso = new ArrayList<>();
-    private CA ca = null; // Apenas um CA
-    private List<Formador> lstFormadores = new ArrayList<>();
-    private List<Curso> lstCursos = new ArrayList<>();
-    private List<Candidato> lstCandidatos = new ArrayList<>();
+    private static Instituicao instance;
+    private List<TipoCurso> lstTiposCurso;
+    private CA ca; // Apenas um CA
+    private List<Formador> lstFormadores;
+    private List<Curso> lstCursos;
+    private List<Candidato> lstCandidatos;
 
     // Completar
     public Instituicao()
@@ -31,6 +32,15 @@ public class Instituicao
         this.lstFormadores = new ArrayList<>();
         this.lstCandidatos = new ArrayList<>();
     }
+
+    public static Instituicao getInstance() {
+        if (instance == null) {
+            instance = new Instituicao();
+        }
+        return instance;
+    }
+
+// TIPO CURSO
 
     public TipoCurso novoTipoCurso()
     {
@@ -77,38 +87,7 @@ public class Instituicao
         return resp;
     }
 
-    public Formador novoFormador() {
-        // Retorna uma nova instância (requer construtor vazio na classe Formador)
-        return new Formador();
-    }
-
-    public List<Formador> getLstFormadores() {
-        return lstFormadores;
-    }
-
-    public CA novoCA() {
-        return new CA();
-    }
-
-    public CA getCA() {
-        return this.ca;
-    }
-
-
-    public boolean adicionarCA(CA ca) {
-        // 1. VALIDAÇÃO PRINCIPAL: Checar se o CA já foi registado
-        if (this.ca != null) {
-            System.out.println("❌ Falha na validação: Já existe um Coordenador Académico registado no sistema.");
-            return false;
-        }
-
-        // 2. Validação secundária (unicidade de sigla/CC, que já faríamos)
-        // (A validação de unicidade de CC/Sigla pode ser ignorada aqui, pois é o primeiro e único)
-
-        // 3. Atribuir o objeto CA
-        this.ca = ca;
-        return true;
-    }
+// CURSO
 
     public Curso novoCurso(String titulo, String sigla, TipoCurso tipo, String descricao, LocalDate dataInicio, LocalDate dataTermino) {
         return new Curso(titulo, sigla, tipo, descricao, dataInicio, dataTermino);
@@ -124,13 +103,50 @@ public class Instituicao
 
     public boolean registarCurso(Curso curso) {
         if (validaCurso(curso) && curso.validarEstado()) {
-            return listaCursos.add(curso);
+            return lstCursos.add(curso);
         }
         return false;
     }
 
-    public Candidato novoCandidato() {
-        return new Candidato();
+    public List<Formador> getLstFormadores() {
+        return lstFormadores;
+    }
+
+// CA
+
+    public CA getCA() {
+        return this.ca;
+    }
+
+    public CA novoCA(String nome, String email, String cc, String sigla, String contacto) {
+        return new CA(nome, email, cc, sigla, contacto);
+    }
+    public boolean validaCA(CA novoCA) {
+        if (novoCA == null) return false;
+
+        // Se já existir um CA atribuído, não deixa criar outro.
+        if (this.ca != null) {
+            throw new IllegalStateException("Erro: Já existe um Coordenador Académico registado.");
+        }
+
+        // Aqui podes adicionar outras validações (ex: verificar se o email já é usado por um Formador)
+        return true;
+    }
+    public boolean registarCA(CA novoCA) {
+        if (validaCA(novoCA)) {
+            // Gerar credenciais
+            String username = "ca1";
+            String password = "cone1234";
+
+            Credenciais credenciais = new Credenciais(username, password);
+            novoCA.setCredenciais(credenciais);
+
+
+            // Gravar na variável única
+            this.ca = novoCA;
+            return true;
+        }
+        return false;
     }
 
 

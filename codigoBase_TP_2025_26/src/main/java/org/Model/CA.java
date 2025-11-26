@@ -1,68 +1,43 @@
 package org.Model;
 
 public class CA {
-    private String sigla;
     private String nome;
-    private String numeroCC;
     private String email;
+    private String cc;
+    private String sigla;
     private String contacto;
     private Credenciais credenciais;
 
-    public CA() {
-    }
+    public CA(String nome, String email, String cc, String sigla, String contacto) {
+        // Validações básicas (Formatos) - Information Expert (Local)
+        if (cc == null || cc.length() != 9) throw new IllegalArgumentException("CC inválido (deve ter 9 dígitos).");
+        if (email == null || !email.contains("@")) throw new IllegalArgumentException("Email inválido.");
 
-    public CA(String sigla, String nome, String numeroCC, String email, String contacto) {
-        this.sigla = sigla;
         this.nome = nome;
-        this.numeroCC = numeroCC;
         this.email = email;
+        this.cc = cc;
+        this.sigla = sigla;
         this.contacto = contacto;
-        this.credenciais = null; // Definidas pelo sistema após o registo pelo Admin
     }
 
-    // Getters and Setters
-    public String getSigla() {
-        return sigla;
-    }
-    public String getNome() {
-        return nome;
+    public void setCredenciais(Credenciais credenciais) {
+        this.credenciais = credenciais;
     }
 
-    public String getNumeroCC() {
-        return numeroCC;
-    }
-
-    public String getEmail() {
-        return email;
-    }
+    // Getters para validações globais
+    public String getEmail() { return email; }
+    public String getCc() { return cc; }
+    public String getNome() { return nome; }
 
     public String getContacto() {
         return contacto;
     }
 
+    public String getSigla() {
+        return sigla;
+    }
+
     public Credenciais getCredenciais() {
         return credenciais;
     }
-
-    public void setSigla(String sigla) {
-        this.sigla = sigla;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public void setNumeroCC(String numeroCC) {
-        this.numeroCC = numeroCC;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setContacto(String contacto) {
-        this.contacto = contacto;
-    }
-
-    public void setCredenciais(Credenciais credenciais) { this.credenciais = credenciais; }
 }
