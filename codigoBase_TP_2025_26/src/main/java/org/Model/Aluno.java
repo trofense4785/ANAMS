@@ -14,7 +14,7 @@ public class Aluno {
     private Credenciais credenciais; // Atribuídas após aceitação da candidatura
 
     // Construtor usado pelo Controller/Service para criar um Aluno a partir de um Candidato
-    public Aluno(Candidato candidato, Credenciais credenciais) {
+    public Aluno(Candidatura candidato, Credenciais credenciais) {
         this.codigoAluno = gerarCodigoAluno();
         this.nome = candidato.getNome();
         this.dataNascimento = candidato.getDataNascimento();

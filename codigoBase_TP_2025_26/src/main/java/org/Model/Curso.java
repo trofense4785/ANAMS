@@ -83,6 +83,9 @@ public class Curso implements Calculavel {
     public List<Modulo> getListaModulos() {
         return listaModulos;
     }
+    public String toString() {
+        return String.format("[%s] %s - Estado: %d", sigla, titulo, estado);
+    }
 }
 
 

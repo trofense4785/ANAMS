@@ -23,7 +23,7 @@ public class Instituicao
     private CA ca; // Apenas um CA
     private List<Formador> lstFormadores;
     private List<Curso> lstCursos;
-    private List<Candidato> lstCandidatos;
+    private List<Candidatura> lstCandidaturas;
 
     // Completar
     public Instituicao()
@@ -32,7 +32,7 @@ public class Instituicao
         this.ca = null;
         this.lstCursos = new ArrayList<>();
         this.lstFormadores = new ArrayList<>();
-        this.lstCandidatos = new ArrayList<>();
+        this.lstCandidaturas = new ArrayList<>();
     }
 
     public static Instituicao getInstance() {
@@ -239,7 +239,90 @@ public class Instituicao
         return lstCursos;
     }
 
+// UC6
 
+    /**
+     * Passo 2.1.1: getCursosPorEstado(estado)
+     * Implementa o LOOP do diagrama para filtrar a lista.
+     * * @param estado (0-A iniciar, 1-Ativo, 2-Suspenso, 3-Cancelado, 4-Concluído)
+     * Se estado for -1, retorna todos.
+     */
+    public List<Curso> getCursosPorEstado(int estado) {
+        // Passo 2.1.1.1: create IstF (Criação da lista filtrada)
+        List<Curso> listaFiltrada = new ArrayList<>();
+
+        // Caixa "Loop" do Diagrama
+        for (Curso cur : this.lstCursos) {
+            // Passo 1.1.1.1: est = getEstado()
+            if (estado == -1 || cur.getEstado() == estado) {
+                // Passo 1.1.1.2: add(cur) -> Adiciona à lista filtrada
+                listaFiltrada.add(cur);
+            }
+        }
+
+        return listaFiltrada; // Retorna a 'IstF'
+    }
+
+    /**
+     * Passo 3.1.1: cur = obterCurso(sigla)
+     * Procura um curso específico pela sigla.
+     */
+    public Curso getCurso(String sigla) {
+        for (Curso c : lstCursos) {
+            if (c.getSigla().equalsIgnoreCase(sigla)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+// UC7
+
+    public Candidatura novaCandidatura(String nome, LocalDate dataNascimento, String habilitacoes, String email, String cc, String genero) {
+        return new Candidatura(nome, dataNascimento, habilitacoes, email, cc, genero);
+    }
+
+    /**
+     * Validação Global: Verifica se o CC ou Email já têm candidatura ou são alunos.
+     */
+    public boolean validaCandidatura(Candidatura cand) {
+        if (cand == null) return false;
+
+        // 1. Valida formato interno
+        if (!cand.valida()) return false;
+
+        // 2. Valida Unicidade nas Candidaturas
+        for (Candidatura c : lstCandidaturas) {
+            if (c.getCc().equals(cand.getCc())) throw new IllegalArgumentException("Já existe uma candidatura com este CC.");
+            if (c.getEmail().equalsIgnoreCase(cand.getEmail())) throw new IllegalArgumentException("Já existe uma candidatura com este Email.");
+        }
+
+        // NOTA: Idealmente, aqui também verificarias a 'lstAlunos' para ver se a pessoa já é aluna da escola.
+
+        return true;
+    }
+
+    /**
+     * Regista, Gera Credenciais e Envia Email.
+     */
+    public boolean registarCandidatura(Candidatura cand) {
+        if (validaCandidatura(cand)) {
+
+            // Requisito [109]: Enviar credenciais após submissão
+            String username = cand.getEmail();
+            String password = UUID.randomUUID().toString().substring(0, 8); // Password aleatória
+
+            Credenciais credenciais = new Credenciais(username, password);
+            cand.setCredenciais(credenciais);
+
+            // Simulação de envio de email
+            System.out.println("Email enviado para " + cand.getEmail() + " | Login: " + username + " Pass: " + password);
+            System.out.println("Instruções enviadas: Aguarde validação do Coordenador.");
+
+            return lstCandidaturas.add(cand);
+        }
+        return false;
+    }
 }
     
     
