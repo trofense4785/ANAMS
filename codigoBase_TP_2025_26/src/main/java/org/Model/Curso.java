@@ -11,7 +11,7 @@ public class Curso implements Calculavel {
     private String descricao;
     private LocalDate dataInicio;
     private LocalDate dataTermino;
-    private int estado; // 0-"A iniciar", 1-"Ativo", 2-"Suspenso", 3-"Cancelado", 4-"Concluído"
+    private EstadoCurso estado;   // 0-"A iniciar", 1-"Ativo", 2-"Suspenso", 3-"Cancelado", 4-"Concluído"
 
     private List<Modulo> listaModulos;
     private List<Formador> formadoresResponsaveis; // Novo requisito 'a'
@@ -24,7 +24,7 @@ public class Curso implements Calculavel {
         this.descricao = descricao;
         this.dataInicio = dataInicio;
         this.dataTermino = dataTermino;
-        this.estado = 0; // Estado inicial "A iniciar"
+        this.estado = EstadoCurso.A_INICIAR;  // Estado inicial "A iniciar"
         this.listaModulos = new ArrayList<>();
         this.formadoresResponsaveis = new ArrayList<>();
     }
@@ -61,6 +61,31 @@ public class Curso implements Calculavel {
         return !listaModulos.isEmpty();
     }
 
+    public boolean isResponsavel(Formador formador) {
+        return formadoresResponsaveis.contains(formador);
+    }
+
+    private boolean validarTransicaoEstado(EstadoCurso novoEstado) {
+        // Exemplo: Um curso cancelado ou concluído não pode voltar a ser ativo
+        if (this.estado == EstadoCurso.CANCELADO || this.estado == EstadoCurso.CONCLUIDO) {
+            return false;
+        }
+        // Exemplo: Não pode passar de "A iniciar" para "Concluído" sem passar por "Ativo"
+        if (this.estado == EstadoCurso.A_INICIAR && novoEstado == EstadoCurso.CONCLUIDO) {
+            return false;
+        }
+        return true;
+    }
+
+    public void setEstado(EstadoCurso novoEstado) {
+        // Passo 4.1.1.1.1: validarEstado() (Self-call no diagrama)
+        if (validarTransicaoEstado(novoEstado)) {
+            this.estado = novoEstado;
+        } else {
+            throw new IllegalStateException("Transição de estado inválida: de " + this.estado + " para " + novoEstado);
+        }
+    }
+
     // Implementação da interface Calculavel (calcula a nota final do curso)
     @Override
     public double calcularNota() {
@@ -76,15 +101,20 @@ public class Curso implements Calculavel {
         return sigla;
     }
 
-    public int getEstado() {
+    public EstadoCurso getEstado() {
         return estado;
     }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
 
     public List<Modulo> getListaModulos() {
         return listaModulos;
     }
     public String toString() {
-        return String.format("[%s] %s - Estado: %d", sigla, titulo, estado);
+        return String.format("Curso: %s (%s) | Estado Atual: %s", getTitulo(), getSigla(), estado);
     }
 }
 

@@ -14,7 +14,11 @@ public class Candidatura {
     // Dados de gestão
     private LocalDate dataSubmissao;
     private Credenciais credenciais; // Geradas após submissão
-    private int estado; // 0-Submetida, 1-Aceite, 2-Rejeitada (Para uso futuro no UC Decidir)
+    private int estado;
+    private String justificacao;
+    private LocalDate dataDecisao;
+    private boolean aceite; // true = Aceite, false = Rejeitada
+
 
     public Candidatura(String nome, LocalDate dataNascimento, String habilitacoes, String email, String cc, String genero) {
         this.nome = nome;
@@ -46,12 +50,35 @@ public class Candidatura {
         this.credenciais = credenciais;
     }
 
+    public void registarDecisao(boolean aceite, String justificacao, LocalDate dataDecisao) {
+        this.aceite = aceite;
+        this.justificacao = justificacao;
+        this.dataDecisao = dataDecisao;
+        this.estado = 1; // Marca como tratada
+    }
+
+    public int getEstado() {
+        return estado;
+    }
+
+    public boolean isAceite() {
+        return aceite;
+    }
+
+    public String getJustificacao() {
+        return justificacao;
+    }
+
+
+
     // Getters para validação global
     public String getCc() { return cc; }
     public String getEmail() { return email; }
     public String getNome() { return nome; }
 
-
+    public LocalDate getDataNascimento() {
+        return dataNascimento;
+    }
 
     @Override
     public String toString() {

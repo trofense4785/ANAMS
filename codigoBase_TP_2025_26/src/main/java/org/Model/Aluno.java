@@ -1,40 +1,108 @@
 package org.Model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Aluno {
-    private String codigoAluno; // Atribuído automaticamente (requisito 'e')
+    private String codigoAluno; // Gerado automaticamente (ex: A-2025-1)
     private String nome;
-    private LocalDate dataNascimento;
-    private String numeroCC;
     private String email;
-    private String contacto; // Assumindo que o contacto é derivado do candidato/matrícula
-    private String habilitacoesAcademicas;
-    private String genero;
-    private Credenciais credenciais; // Atribuídas após aceitação da candidatura
+    private String cc;
+    private LocalDate dataNascimento;
+    private List<Inscricao> minhasInscricoes;
+    private List<Inscricao> inscricoes;
 
-    // Construtor usado pelo Controller/Service para criar um Aluno a partir de um Candidato
-    public Aluno(Candidatura candidato, Credenciais credenciais) {
-        this.codigoAluno = gerarCodigoAluno();
-        this.nome = candidato.getNome();
-        this.dataNascimento = candidato.getDataNascimento();
-        this.numeroCC = candidato.getNumeroCC();
-        this.email = candidato.getEmail();
-        this.contacto = null; // Ajustar se o contacto for obrigatório no candidato
-        this.habilitacoesAcademicas = candidato.getHabilitacoesAcademicas();
-        this.genero = candidato.getGenero();
-        this.credenciais = credenciais;
+    // Podes adicionar outros campos herdados da candidatura
+
+    public Aluno(String nome, String email, String cc, LocalDate dataNascimento) {
+        this.nome = nome;
+        this.email = email;
+        this.cc = cc;
+        this.dataNascimento = dataNascimento;
+        this.minhasInscricoes = new ArrayList<>();
+        this.inscricoes = new ArrayList<>();
+        // O código é definido pela Instituição
     }
 
-    private String gerarCodigoAluno() {
-        return "ALU" + System.currentTimeMillis();
+    public void setCodigoAluno(String codigo) {
+        this.codigoAluno = codigo;
     }
 
-    // Getters and Setters
-    public String getCodigoAluno() { return codigoAluno; }
-    public String getNome() { return nome; }
-    // ... (restantes getters)
+    public boolean registarInscricao(Curso curso) {
+        // Validação (Passo 3.1.1.1.2 do diagrama: valida)
+        if (estaInscrito(curso)) {
+            // O aluno já está inscrito
+            return false;
+        }
 
-    public Credenciais getCredenciais() { return credenciais; }
-    public void setCredenciais(Credenciais credenciais) { this.credenciais = credenciais; }
+
+        // Criação (Passo 3.1.1.1: create(curso))
+        // Nota: O diagrama passa apenas 'curso', mas precisamos do 'this' (aluno) para criar a ligação
+        Inscricao ins = new Inscricao(this, curso);
+
+        // Validação interna da inscrição (Passo 3.1.1.1.3: valida(ins))
+        // (Pode ser apenas ver se o objeto foi criado corretamente)
+        if (ins.getEstado().equals("ativa")) {
+
+        // Adição à lista (Passo 3.1.1.1.4: addInscricao(ins))
+        return minhasInscricoes.add(ins);
+        }
+        return false;
+    }
+
+    private boolean estaInscrito(Curso c) {
+        for (Inscricao i : minhasInscricoes) {
+            if (i.getCurso().equals(c) && i.getEstado().equals("ativa")) return true;
+        }
+        return false;
+    }
+
+    public List<String> obterListaInscricoesAsString() {
+        // Passo 1.2.1.1: create lstI
+        List<String> lstI = new ArrayList<>();
+
+        // Loop sobre arrIns (Passo 1.2.1.2)
+        for (Inscricao ins : this.inscricoes) {
+            // Passo 1.2.1.3: estado = getEstado()
+            // Opt: estado.equals("ativa")
+            if (ins.getEstado().equalsIgnoreCase("ativa")) {
+                // Passo 1.2.1.4: toString()
+                String str = ins.toString();
+                // Passo 1.2.1.5: add(str)
+                lstI.add(str);
+            }
+        }
+        return lstI;
+    }
+
+    // --- Passo 2.1.1: obterInscricao(idInscricao) ---
+    public Inscricao obterInscricao(String idInscricao) {
+        for (Inscricao ins : inscricoes) {
+            if (ins.getIdInscricao().equals(idInscricao)) {
+                return ins;
+            }
+        }
+        return null;
+    }
+
+    // --- Passo 3.1.1: registaAnulacao(ins) ---
+    public boolean registaAnulacao(Inscricao ins) {
+        if (ins != null) {
+            // Passo 3.1.1.1: setEstado("Cancelada")
+            ins.setEstado("cancelada");
+            return true;
+        }
+        return false;
+    }
+
+
+    public String getEmail() { return email; }
+
+
+
+    @Override
+    public String toString() {
+        return String.format("Aluno [%s] %s  %s", codigoAluno, nome, email);
+    }
 }

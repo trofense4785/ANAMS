@@ -1,6 +1,7 @@
 package org.Controller;
 
 import org.Model.Curso;
+import org.Model.EstadoCurso;
 import org.Model.Instituicao;
 
 import java.util.List;
@@ -16,8 +17,13 @@ public class ConsultarListaCursos_Controller {
     /**
      * Passo 2.1: getLstCursos(estado)
      */
-    public List<Curso> getLstCursos(int estado) {
-        // Chama a Instituição para fazer a filtragem (Passo 2.1.1)
+    public List<Curso> getTodosCursos() {
+        // Passamos null para indicar que não queremos filtrar nada
+        return instituicao.getCursosPorEstado(null);
+    }
+
+    // Para ver FILTRADOS (ex: A iniciar)
+    public List<Curso> getLstCursos(EstadoCurso estado) {
         return instituicao.getCursosPorEstado(estado);
     }
 

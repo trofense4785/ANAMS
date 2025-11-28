@@ -24,6 +24,7 @@ public class Instituicao
     private List<Formador> lstFormadores;
     private List<Curso> lstCursos;
     private List<Candidatura> lstCandidaturas;
+    private List<Aluno> lstAlunos;
 
     // Completar
     public Instituicao()
@@ -33,6 +34,7 @@ public class Instituicao
         this.lstCursos = new ArrayList<>();
         this.lstFormadores = new ArrayList<>();
         this.lstCandidaturas = new ArrayList<>();
+        this.lstAlunos=new ArrayList<>();
     }
 
     public static Instituicao getInstance() {
@@ -247,20 +249,19 @@ public class Instituicao
      * * @param estado (0-A iniciar, 1-Ativo, 2-Suspenso, 3-Cancelado, 4-Concluído)
      * Se estado for -1, retorna todos.
      */
-    public List<Curso> getCursosPorEstado(int estado) {
-        // Passo 2.1.1.1: create IstF (Criação da lista filtrada)
+    public List<Curso> getCursosPorEstado(EstadoCurso estadoFiltro) {
+
         List<Curso> listaFiltrada = new ArrayList<>();
 
-        // Caixa "Loop" do Diagrama
         for (Curso cur : this.lstCursos) {
-            // Passo 1.1.1.1: est = getEstado()
-            if (estado == -1 || cur.getEstado() == estado) {
-                // Passo 1.1.1.2: add(cur) -> Adiciona à lista filtrada
+            // 2. Lógica de "Ver Todos":
+            // Em vez de usares o número -1, usas 'null' para dizer "sem filtro"
+            if (estadoFiltro == null || cur.getEstado() == estadoFiltro) {
                 listaFiltrada.add(cur);
             }
         }
 
-        return listaFiltrada; // Retorna a 'IstF'
+        return listaFiltrada;
     }
 
     /**
@@ -323,6 +324,175 @@ public class Instituicao
         }
         return false;
     }
+
+// UC8
+
+    /**
+     * Retorna apenas as candidaturas que ainda não foram tratadas (Estado 0).
+     */
+    public List<Candidatura> getCandidaturasPendentes() {
+        List<Candidatura> pendentes = new ArrayList<>();
+        for (Candidatura c : lstCandidaturas) {
+            if (c.getEstado() == 0) { // 0 = Submetida/Pendente
+                pendentes.add(c);
+            }
+        }
+        return pendentes;
+    }
+
+    /**
+     * Processa a decisão final.
+     * Se for ACEITE -> Cria Aluno.
+     * Sempre -> Envia Email.
+     */
+    public boolean registarDecisaoCandidatura(Candidatura cand, boolean aceite, String justificacao, LocalDate dataDecisao) {
+        if (cand == null) return false;
+
+        // 1. Atualizar a Candidatura
+        cand.registarDecisao(aceite, justificacao, dataDecisao);
+
+        // 2. Se ACEITE -> Criar Aluno Automaticamente [cite: 20]
+        if (aceite) {
+            criarAlunoDeCandidatura(cand);
+        }
+
+        // 3. Notificar Candidato (Simulação)
+        String decisao = aceite ? "ACEITE" : "REJEITADA";
+        System.out.println("Email para " + cand.getEmail() + ": A sua candidatura foi " + decisao + ".");
+        System.out.println("Justificação: " + justificacao);
+
+        return true;
+    }
+
+    /**
+     * Método privado para transformar Candidato em Aluno.
+     */
+    private void criarAlunoDeCandidatura(Candidatura cand) {
+        // Criar o objeto Aluno com dados da candidatura
+        Aluno novoAluno = new Aluno(cand.getNome(), cand.getEmail(), cand.getCc(), cand.getDataNascimento());
+
+        // Gerar Código de Aluno [cite: 21]
+        // Exemplo: "A-" + ano + "-" + sequencial
+        int sequencial = lstAlunos.size() + 1;
+        String codigo = "AL-" + java.time.Year.now().getValue() + "-" + sequencial;
+        novoAluno.setCodigoAluno(codigo);
+
+        // Guardar na lista de alunos
+        lstAlunos.add(novoAluno);
+        System.out.println("Novo aluno registado: " + novoAluno.toString());
+    }
+
+    public List<Aluno> getListaAlunos() { return lstAlunos; }
+
+// UC9
+
+    public List<String> obterListaCursosAsString(EstadoCurso estadoFiltro) {
+        List<String> listaStrings = new ArrayList<>();
+
+        // Diagrama: loop
+        for (Curso curso : lstCursos) {
+            // Diagrama: 1.2.1.3: estado = getEstado() e verificação
+            if (curso.getEstado() == estadoFiltro) {
+                // Diagrama: 1.2.1.4: curso.toString()
+                // Diagrama: 1.2.1.5: add(curso) -> Adiciona a String à lista
+                listaStrings.add(curso.toString());
+            }
+        }
+        return listaStrings;
+    }
+
+
+
+    /**
+     * Passo 3.1.1: registarInscricao(curso)
+     * O diagrama mostra a Instituição a receber o pedido e a passá-lo ao Aluno.
+     */
+    public boolean registarInscricao(Curso curso, Aluno aluno) {
+        if (curso != null && aluno != null) {
+            // A Instituição delega no Aluno (como mostra a seta para a direita no diagrama)
+            return aluno.registarInscricao(curso);
+        }
+        return false;
+    }
+
+    // Método auxiliar para buscar aluno por email (Passo 1.1 do diagrama)
+    public Aluno getAlunoPorEmail(String email) {
+        for (Aluno a : lstAlunos) {
+            if (a.getEmail().equalsIgnoreCase(email)) return a;
+        }
+        return null;
+    }
+
+// UC10
+
+    public Aluno obterAlunoByEmail(String email) {
+        // Loop sobre arrAlu (Passo 1.1.1.1)
+        for (Aluno alu : lstAlunos) {
+            // Passo 1.1.1.2: getEmail()
+            if (alu.getEmail().equalsIgnoreCase(email)) {
+                return alu; // setFlag(true) implícito no return
+            }
+        }
+        return null;
+    }
+
+// UC11
+
+    public Formador getFormadorByEmail(String email) {
+        for (Formador f : lstFormadores) {
+            if (f.getEmail().equalsIgnoreCase(email)) {
+                return f;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Passo 1.1.2: getCursosDoFormador(formador)
+     * Implementa o LOOP e o ALT do diagrama.
+     */
+    public List<Curso> getCursosDoFormador(Formador formador) {
+        // 1.1.2.1: create()
+        List<Curso> meusCursos = new ArrayList<>();
+
+        if (formador == null) return meusCursos;
+
+        // Loop Principal (Para cada curso na instituição)
+        for (Curso curso : lstCursos) {
+            boolean adicionado = false;
+
+            // 1.1.2.2: isResponsavel(formador)
+            if (curso.isResponsavel(formador)) {
+                // 1.1.2.3: add(cur)
+                meusCursos.add(curso);
+                adicionado = true;
+            }
+
+            // Se ainda não foi adicionado, verificamos os módulos (O bloco ELSE/LOOP do diagrama)
+            if (!adicionado) {
+                // Loop Interno (Para cada módulo)
+                for (Modulo m : curso.getListaModulos()) {
+                    // 1.1.2.4: getFormadorResponsavel()
+                    if (m.getFormadorResponsavel() != null &&
+                            m.getFormadorResponsavel().equals(formador)) {
+
+                        // 1.1.2.5: add(cur) - Adiciona e para de procurar neste curso
+                        meusCursos.add(curso);
+                        break;
+                    }
+                }
+            }
+        }
+        return meusCursos;
+    }
+
+// UC12
+
+// UC13 - NAO HA NADA PARA METER
+
+
 }
+
+
     
     

@@ -12,6 +12,7 @@ public class AdicionarModuloCurso_Controller {
     private Curso curso;
     private Modulo modulo;
 
+
     public AdicionarModuloCurso_Controller() {
         this.instituicao = Instituicao.getInstance();
     }
@@ -24,11 +25,21 @@ public class AdicionarModuloCurso_Controller {
      */
     public List<Curso> getCursosDisponiveis() {
         List<Curso> cursosFiltrados = new ArrayList<>();
+
         for (Curso c : instituicao.getLstCursos()) {
-            if (c.getEstado() == 0 || c.getEstado() == 1) { // 0=A Iniciar, 1=Ativo
+
+            // CORREÇÃO: Usar o Enum em vez de números
+            // Requisito 1.1.b: "Só deverá ser possível adicionar módulos a cursos que ainda não iniciaram."
+            // Por isso, tecnicamente só deves verificar o A_INICIAR.
+
+            if (c.getEstado() == EstadoCurso.A_INICIAR) {
                 cursosFiltrados.add(c);
             }
+
+            // Se quiseres manter o "Ativo" (embora vá contra o requisito 1.1.b), seria:
+            // if (c.getEstado() == EstadoCurso.A_INICIAR || c.getEstado() == EstadoCurso.ATIVO)
         }
+
         return cursosFiltrados;
     }
 

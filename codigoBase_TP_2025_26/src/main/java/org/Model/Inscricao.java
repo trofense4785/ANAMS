@@ -1,30 +1,39 @@
 package org.Model;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class Inscricao {
-    private String idInscricao; // Atribuído automaticamente
+    private String idInscricao;
     private LocalDate dataRealizacao;
-    private Aluno aluno;
+    private String estado; // "ativa", "cancelada", "concluída"
+
     private Curso curso;
-    private int estado; // 0-"ativa", 1-"cancelada", 2-"concluída"
+    private Aluno aluno;
 
     public Inscricao(Aluno aluno, Curso curso) {
-        this.idInscricao = gerarIdInscricao();
-        this.dataRealizacao = LocalDate.now();
         this.aluno = aluno;
         this.curso = curso;
-        this.estado = 0; // Por omissão, "ativa"
+
+        // Requisitos IT2 (Alínea d): Identificador único, data e estado
+        this.idInscricao = "INS-" + UUID.randomUUID().toString().substring(0, 8);
+        this.dataRealizacao = LocalDate.now();
+        this.estado = "ativa";
     }
 
-    private String gerarIdInscricao() {
-        return "INS" + System.currentTimeMillis();
-    }
-
-    // Getters and Setters
-    public int getEstado() { return estado; }
-    public void setEstado(int estado) { this.estado = estado; }
-    public Aluno getAluno() { return aluno; }
     public Curso getCurso() { return curso; }
-    // ...
+    public String getEstado() { return estado; }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getIdInscricao() {
+        return idInscricao;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Inscrição [%s] - Curso: %s (%s)", idInscricao, curso.getTitulo(), estado);
+    }
 }
