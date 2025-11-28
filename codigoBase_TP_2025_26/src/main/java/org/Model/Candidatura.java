@@ -50,6 +50,10 @@ public class Candidatura {
         this.credenciais = credenciais;
     }
 
+    public Credenciais getCredenciais() {
+        return credenciais;
+    }
+
     public void registarDecisao(boolean aceite, String justificacao, LocalDate dataDecisao) {
         this.aceite = aceite;
         this.justificacao = justificacao;

@@ -368,18 +368,28 @@ public class Instituicao
      * Método privado para transformar Candidato em Aluno.
      */
     private void criarAlunoDeCandidatura(Candidatura cand) {
-        // Criar o objeto Aluno com dados da candidatura
+        // 1. Criar o objeto Aluno com os dados pessoais
         Aluno novoAluno = new Aluno(cand.getNome(), cand.getEmail(), cand.getCc(), cand.getDataNascimento());
 
-        // Gerar Código de Aluno [cite: 21]
-        // Exemplo: "A-" + ano + "-" + sequencial
+        // 2. Gerar e atribuir o Código de Aluno (Requisito IT2)
         int sequencial = lstAlunos.size() + 1;
         String codigo = "AL-" + java.time.Year.now().getValue() + "-" + sequencial;
         novoAluno.setCodigoAluno(codigo);
 
-        // Guardar na lista de alunos
+        // 3. ⚠️ TRANSFERIR AS CREDENCIAIS (Correção)
+        // O aluno herda o login/password que tinha como candidato
+        if (cand.getCredenciais() != null) {
+            novoAluno.setCredenciais(cand.getCredenciais());
+        } else {
+            // Caso de segurança: se por algum motivo não tiver, gera novas
+            // (Isto não deve acontecer se o fluxo UC7 estiver correto)
+            // novoAluno.setCredenciais(new Credenciais(cand.getEmail(), "novaPass123"));
+        }
+
+        // 4. Guardar na lista
         lstAlunos.add(novoAluno);
-        System.out.println("Novo aluno registado: " + novoAluno.toString());
+
+        System.out.println("Aluno criado com sucesso: " + codigo);
     }
 
     public List<Aluno> getListaAlunos() { return lstAlunos; }
@@ -487,6 +497,19 @@ public class Instituicao
     }
 
 // UC12
+
+    public List<Aluno> getAlunosDoCurso(Curso curso) {
+        List<Aluno> alunosDoCurso = new ArrayList<>();
+
+        // Percorre a lista global de alunos
+        for (Aluno aluno : this.lstAlunos) {
+            // Verifica se o aluno tem alguma inscrição nesse curso
+            if (aluno.temInscricaoNoCurso(curso)) {
+                alunosDoCurso.add(aluno);
+            }
+        }
+        return alunosDoCurso;
+    }
 
 // UC13 - NAO HA NADA PARA METER
 

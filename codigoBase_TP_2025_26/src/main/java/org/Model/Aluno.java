@@ -10,6 +10,7 @@ public class Aluno {
     private String email;
     private String cc;
     private LocalDate dataNascimento;
+    private Credenciais credenciais;
     private List<Inscricao> minhasInscricoes;
     private List<Inscricao> inscricoes;
 
@@ -86,6 +87,16 @@ public class Aluno {
         return null;
     }
 
+    public boolean temInscricaoNoCurso(Curso c) {
+        for (Inscricao ins : minhasInscricoes) {
+            if (ins.getCurso().equals(c)) {
+                // Se encontrou qualquer inscrição (Ativa, Cancelada, Concluída), retorna true
+                return true;
+            }
+        }
+        return false;
+    }
+
     // --- Passo 3.1.1: registaAnulacao(ins) ---
     public boolean registaAnulacao(Inscricao ins) {
         if (ins != null) {
@@ -98,6 +109,15 @@ public class Aluno {
 
 
     public String getEmail() { return email; }
+
+    public void setCredenciais(Credenciais credenciais) {
+        this.credenciais = credenciais;
+    }
+
+    // Getter (necessário para validação de login, se implementares)
+    public Credenciais getCredenciais() {
+        return credenciais;
+    }
 
 
 
