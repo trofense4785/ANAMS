@@ -16,7 +16,7 @@ public class ConsultarListaAlunosCurso_Controller {
 
         // 1. Autenticação (Requisito h - [cite: 25])
         String email = Sessao.getInstance().getEmailUsuarioLogado();
-        this.formadorLogado = instituicao.getFormadorByEmail(email);
+        this.formadorLogado = instituicao.getFormadorPorEmail(email);
 
         if (this.formadorLogado == null) {
             throw new IllegalStateException("Erro: Nenhum formador autenticado.");

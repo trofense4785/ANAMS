@@ -86,15 +86,25 @@ public class Curso implements Calculavel {
         }
     }
 
+    public double calcularNota(Aluno aluno) {
+        double notaFinal = 0.0;
+
+        for (Modulo m : listaModulos) {
+            Double notaModulo = m.getNotaAluno(aluno);
+
+            // Assumimos que a validação "tudoLancado" já foi feita no Aluno antes de chamar este método
+            if (notaModulo != null) {
+                notaFinal += notaModulo * (m.getPonderacao() / 100.0);
+            }
+        }
+        return notaFinal;
+    }
+
     // Implementação da interface Calculavel (calcula a nota final do curso)
     @Override
     public double calcularNota() {
-        // IT2: Nota final calculada automaticamente baseada nos módulos e ponderações [cite: 120]
-        double notaFinal = 0;
-        for (Modulo m : listaModulos) {
-            notaFinal += m.calcularNota() * (m.getPonderacao() / 100.0);
-        }
-        return notaFinal;
+        // Método genérico da interface (sem argumentos), pode lançar erro ou retornar 0
+        return 0.0;
     }
 
     public String getSigla() {

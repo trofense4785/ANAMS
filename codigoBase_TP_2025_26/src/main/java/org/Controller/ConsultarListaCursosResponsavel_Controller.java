@@ -25,7 +25,7 @@ public class ConsultarListaCursosResponsavel_Controller {
         String email = Sessao.getInstance().getEmailUsuarioLogado();
 
         // 2. Obter o objeto Formador
-        this.formadorLogado = instituicao.getFormadorByEmail(email);
+        this.formadorLogado = instituicao.getFormadorPorEmail(email);
 
         if (this.formadorLogado == null) {
             return new ArrayList<>(); // Ou lançar erro

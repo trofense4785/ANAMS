@@ -107,8 +107,78 @@ public class Aluno {
         return false;
     }
 
+    public List<Curso> obterCursosInscritos() {
+        List<Curso> cursos = new ArrayList<>();
+        for (Inscricao ins : minhasInscricoes) {
+            cursos.add(ins.getCurso()); // Extrai o OBJETO Curso
+        }
+        return cursos;
+    }
+
+
+    public List<String> getBoletimNotas(Curso curso) {
+        // Passo 2.1.2.1: create() -> Cria a lista de resultados
+        List<String> dados = new ArrayList<>();
+
+        // Passo 2.1.2.2: tudoLancado = true (Flag de controlo)
+        boolean tudoLancado = true;
+
+        // Passo 2.1.2.3: getListaModulos() (Loop)
+        for (Modulo m : curso.getListaModulos()) {
+
+            // Passo 2.1.2.4: nota = getNotaAluno(this)
+            Double nota = m.getNotaAluno(this); // Retorna Double (pode ser null)
+
+            // Caixa "alt" do diagrama
+            if (nota != null) {
+                // Passo 2.1.2.5: Adiciona nota formatada
+                dados.add(String.format("Módulo %s: %.2f valores", m.getTitulo(), nota));
+            } else {
+                // Passo 2.1.2.6: Nota pendente
+                dados.add("Módulo " + m.getTitulo() + ": Pendente");
+
+                // Passo 2.1.2.7: tudoLancado = false
+                tudoLancado = false;
+            }
+        }
+
+        // Caixa "sd opt" do diagrama (Cálculo da Nota Final)
+        if (tudoLancado) {
+            // Passo 2.1.2.8: notaFinal = calcularNota(aluno)
+            // O Curso usa a interface Calculavel para fazer a média ponderada
+            double notaFinal = curso.calcularNota(this);
+
+            // Passo 2.1.2.9: Adiciona nota final
+            dados.add(String.format(">>> NOTA FINAL DO CURSO: %.2f valores", notaFinal));
+        } else {
+            dados.add(">>> Nota final indisponível (existem módulos pendentes).");
+        }
+
+        return dados;
+    }
+
 
     public String getEmail() { return email; }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getCc() {
+        return cc;
+    }
+
+    public LocalDate getDataNascimento() {
+        return dataNascimento;
+    }
+
+    public List<Inscricao> getMinhasInscricoes() {
+        return minhasInscricoes;
+    }
+
+    public List<Inscricao> getInscricoes() {
+        return inscricoes;
+    }
 
     public void setCredenciais(Credenciais credenciais) {
         this.credenciais = credenciais;

@@ -23,7 +23,7 @@ public class AnularInscricao_Controller {
         String email = Sessao.getInstance().getEmailUsuarioLogado();
 
         // Controller chama Instituição
-        this.aluno = instituicao.obterAlunoByEmail(email);
+        this.aluno = instituicao.obterAlunoPorEmail(email);
     }
 
     // --- Passo 1.2: obterListaInscricoesAsString ---

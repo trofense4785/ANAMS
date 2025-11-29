@@ -435,7 +435,7 @@ public class Instituicao
 
 // UC10
 
-    public Aluno obterAlunoByEmail(String email) {
+    public Aluno obterAlunoPorEmail(String email) {
         // Loop sobre arrAlu (Passo 1.1.1.1)
         for (Aluno alu : lstAlunos) {
             // Passo 1.1.1.2: getEmail()
@@ -448,7 +448,7 @@ public class Instituicao
 
 // UC11
 
-    public Formador getFormadorByEmail(String email) {
+    public Formador getFormadorPorEmail(String email) {
         for (Formador f : lstFormadores) {
             if (f.getEmail().equalsIgnoreCase(email)) {
                 return f;
@@ -511,7 +511,7 @@ public class Instituicao
         return alunosDoCurso;
     }
 
-// UC13 - NAO HA NADA PARA METER
+// UC13- NAO HA NADA PARA METER
 
 
 }

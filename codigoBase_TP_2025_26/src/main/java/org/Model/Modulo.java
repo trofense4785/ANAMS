@@ -67,6 +67,32 @@ public class Modulo implements Calculavel {
         return soma / lstClassificacoes.size();
     }
 
+    public Double getNotaAluno(Aluno aluno) {
+        for (Classificacao c : lstClassificacoes) {
+            if (c.getAluno().equals(aluno)) {
+                return c.getNota();
+            }
+        }
+        return null; // Representa "Pendente"
+    }
+
+    public void lancarClassificacao(Aluno aluno, double nota) {
+        // 1. Tentar encontrar classificação existente (Loop do diagrama)
+        for (Classificacao c : lstClassificacoes) {
+            if (c.getAluno().equals(aluno)) {
+                // Caixa "Alt" -> Existe
+                c.setNota(nota);
+                return;
+            }
+        }
+
+        // Caixa "Alt" -> Nova Classificação
+        // Passo 4.1.1.3: create()
+        Classificacao novaClassificacao = new Classificacao(aluno, this, nota);
+        // Passo 4.1.1.4: add()
+        lstClassificacoes.add(novaClassificacao);
+    }
+
     public String getCodigo() {
         return codigo;
     }
