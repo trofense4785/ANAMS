@@ -127,16 +127,24 @@ public class Instituicao
     }
     public boolean registarCA(CA novoCA) {
         if (validaCA(novoCA)) {
-            // Gerar credenciais
-            String username = "ca1";
-            String password = "cone1234";
+            // 1. Gerar credenciais
+            String username = "admin"; // Ou novoCA.getEmail()
+            String password = java.util.UUID.randomUUID().toString().substring(0, 8);
 
-            Credenciais credenciais = new Credenciais(username, password);
-            novoCA.setCredenciais(credenciais);
+            Credenciais creds = new Credenciais(username, password);
+            novoCA.setCredenciais(creds);
 
-
-            // Gravar na variável única
+            // 2. Gravar
             this.ca = novoCA;
+
+            // --- ADICIONA ESTAS LINHAS AQUI PARA VERES A PASSWORD ---
+            System.out.println("\n*****************************************");
+            System.out.println(" Credenciais Geradas:");
+            System.out.println(" Login: " + username);
+            System.out.println(" Password: " + password);
+            System.out.println("*****************************************\n");
+            // --------------------------------------------------------
+
             return true;
         }
         return false;
@@ -150,15 +158,28 @@ public class Instituicao
 
     public boolean validaFormador(Formador formador) {
         if (formador == null) return false;
-        if (!formador.valida()) return false; // Validação local
 
+        // 1. Validação Local (formato dos dados)
+        if (!formador.valida()) return false;
+
+        // 2. Validação Global (UNICIDADE)
         for (Formador f : lstFormadores) {
+
+            // Verifica CC
             if (f.getCc().equals(formador.getCc())) {
                 throw new IllegalArgumentException("Erro: CC já registado noutro formador.");
             }
+
+            // Verifica Email
             if (f.getEmail().equalsIgnoreCase(formador.getEmail())) {
                 throw new IllegalArgumentException("Erro: Email já registado noutro formador.");
             }
+
+            // --- NOVA VERIFICAÇÃO: CONTACTO ---
+            if (f.getContacto().equals(formador.getContacto())) {
+                throw new IllegalArgumentException("Erro: Contacto telefónico já registado noutro formador.");
+            }
+            // ----------------------------------
         }
         return true;
     }

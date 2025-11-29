@@ -26,6 +26,10 @@ public class RegistarCurso_Controller {
     public void novoCurso(String titulo, String sigla, TipoCurso tipo, String descricao, LocalDate dataInicio, LocalDate dataTermino) {
         this.curso = instituicao.novoCurso(titulo, sigla, tipo, descricao, dataInicio, dataTermino);
 
+        if (dataTermino.isBefore(dataInicio)) {
+            throw new IllegalArgumentException("A data de fim não pode ser anterior à data de início.");
+        }
+
         if (!instituicao.validaCurso(this.curso)) {
             throw new IllegalArgumentException("Curso com esta sigla já existe.");
         }

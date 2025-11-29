@@ -66,6 +66,10 @@ public class Formador {
         return idFormador;
     }
 
+    public String getContacto() {
+        return contacto;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

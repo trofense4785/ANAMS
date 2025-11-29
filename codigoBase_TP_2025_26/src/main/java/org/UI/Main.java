@@ -43,11 +43,11 @@ public class Main {
         System.out.println(">> A carregar dados de teste...");
 
         try {
-            // --- 1. Registar Coordenador Académico (CA) ---
+             //--- 1. Registar Coordenador Académico (CA) ---
             CA ca = new CA("Ana Silva", "ana@isep.ipp.pt", "123456789", "ADM", "912345678");
-            // Define credenciais manuais para ser fácil testares
-            ca.setCredenciais(new Credenciais("admin", "admin"));
+             //Define credenciais manuais para ser fácil testares
             instituicao.registarCA(ca);
+            ca.setCredenciais(new Credenciais("admin", "admin"));
             System.out.println("   + CA criado (Login: admin / Pass: admin)");
 
             // --- 2. Criar Tipos de Curso ---

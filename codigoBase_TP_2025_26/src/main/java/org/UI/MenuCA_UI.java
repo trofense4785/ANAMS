@@ -91,7 +91,7 @@ public class MenuCA_UI {
         }
 
         System.out.println("\n--- Login Coordenador Académico ---");
-        System.out.print("Email/Username: ");
+        System.out.print("Username: ");
         String user = sc.nextLine();
         System.out.print("Password: ");
         String pass = sc.nextLine();
