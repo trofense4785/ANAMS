@@ -7,6 +7,7 @@
 package org.UI;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 import utils.Utils;
 import org.Model.Instituicao;
@@ -14,32 +15,38 @@ import org.Model.Instituicao;
  *
  * @author Dulce Mota <mdm@isep.ipp.pt>
  */
-public class MenuCad_UI
-{
+public class MenuCad_UI {
+
     private Instituicao instituicao;
-    private String opcao;
+    private Scanner sc;
 
-    public MenuCad_UI(Instituicao instituicao)
-    {
+    public MenuCad_UI(Instituicao instituicao) {
         this.instituicao = instituicao;
+        this.sc = new Scanner(System.in);
     }
-    public void run() throws IOException
-    {
-        do
-        {
-            System.out.println("###### MENU #####\n\n");
-            System.out.println("1. Fazer matricula na Instituição");
 
-            System.out.println("0. Voltar");
+    public void run() {
+        String opcao;
+        do {
+            System.out.println("\n###### MENU CANDIDATO ######");
+            System.out.println("1. Submeter Nova Candidatura (UC7)");
+            System.out.println("0. Voltar ao Menu Inicial");
+            System.out.println("############################");
+            System.out.print("Escolha uma opção: ");
 
-            opcao = Utils.readLineFromConsole("Escolha uma opção: ");
+            opcao = sc.nextLine();
 
-            if( opcao.equals("1") )
-            {
-                // Completar
-                System.out.println("Selecionou a opção: Fazer matricula na Instituição");
+            switch (opcao) {
+                case "1":
+                    // Chama a UI do UC7
+                    SubmeterCandidatura_UI ui = new SubmeterCandidatura_UI();
+                    ui.run();
+                    break;
+                case "0":
+                    break;
+                default:
+                    System.out.println("Opção inválida.");
             }
-        }
-        while (!opcao.equals("0") );
+        } while (!opcao.equals("0"));
     }
 }

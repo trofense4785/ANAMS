@@ -396,19 +396,13 @@ public class Instituicao
 
 // UC9
 
-    public List<String> obterListaCursosAsString(EstadoCurso estadoFiltro) {
-        List<String> listaStrings = new ArrayList<>();
-
-        // Diagrama: loop
-        for (Curso curso : lstCursos) {
-            // Diagrama: 1.2.1.3: estado = getEstado() e verificação
-            if (curso.getEstado() == estadoFiltro) {
-                // Diagrama: 1.2.1.4: curso.toString()
-                // Diagrama: 1.2.1.5: add(curso) -> Adiciona a String à lista
-                listaStrings.add(curso.toString());
-            }
+    public List<String> obterListaCursosAsString(Aluno aluno) {
+        if (aluno != null) {
+            // Delega no Aluno (Expert) a responsabilidade de formatar a lista
+            // Tens de garantir que a classe Aluno tem o método 'obterCursosInscritosAtivos()'
+            return aluno.obterCursosInscritosAtivos();
         }
-        return listaStrings;
+        return new ArrayList<>();
     }
 
 
@@ -444,6 +438,14 @@ public class Instituicao
             }
         }
         return null;
+    }
+
+    public boolean registaAnulacao(Curso curso, Aluno aluno) {
+        if (curso != null && aluno != null) {
+            // Delega no Aluno a responsabilidade de mudar o estado da inscrição
+            return aluno.registarAnulacao(curso);
+        }
+        return false;
     }
 
 // UC11
@@ -511,7 +513,7 @@ public class Instituicao
         return alunosDoCurso;
     }
 
-// UC13- NAO HA NADA PARA METER
+
 
 
 }

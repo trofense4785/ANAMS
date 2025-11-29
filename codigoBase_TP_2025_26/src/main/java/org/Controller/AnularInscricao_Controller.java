@@ -1,56 +1,52 @@
 package org.Controller;
 
-import org.Model.Aluno;
-import org.Model.Inscricao;
-import org.Model.Instituicao;
-import org.Model.Sessao;
+import org.Model.*;
 
 import java.util.List;
 
 public class AnularInscricao_Controller {
 
     private Instituicao instituicao;
-    private Aluno aluno;
-    private Inscricao inscricaoSelecionada;
+    private Aluno alunoLogado;
+    private Curso cursoSelecionado;
 
     public AnularInscricao_Controller() {
         this.instituicao = Instituicao.getInstance();
     }
 
-    // --- Passo 1.1: obterAlunoByEmail ---
+    // --- Passo 1: Identificar Aluno ---
     public void iniciarAnulacao() {
-        // Simulação da UI a enviar o email (ou obter da sessão)
         String email = Sessao.getInstance().getEmailUsuarioLogado();
+        this.alunoLogado = instituicao.getAlunoPorEmail(email);
 
-        // Controller chama Instituição
-        this.aluno = instituicao.obterAlunoPorEmail(email);
-    }
-
-    // --- Passo 1.2: obterListaInscricoesAsString ---
-    public List<String> obterListaInscricoesAsString() {
-        if (this.aluno != null) {
-            // O aluno é que gera a lista filtrada (Expert)
-            return this.aluno.obterListaInscricoesAsString();
-        }
-        return null;
-    }
-
-    // --- Passo 2.1: obterInscricao(id) ---
-    public void selecionarInscricao(String idInscricao) {
-        if (this.aluno != null) {
-            this.inscricaoSelecionada = this.aluno.obterInscricao(idInscricao);
+        if (this.alunoLogado == null) {
+            throw new IllegalStateException("Erro: Aluno não identificado na sessão.");
         }
     }
 
-    public String getDadosInscricao() {
-        return (inscricaoSelecionada != null) ? inscricaoSelecionada.toString() : "";
+    // --- Passo 2: Obter Lista (CORRIGIDO) ---
+    public List<String> getListaCursosInscritos() {
+        if (this.alunoLogado == null) iniciarAnulacao();
+
+        // O erro estava aqui: o método no Aluno chama-se 'obterCursosInscritosAtivos'
+        return this.alunoLogado.obterCursosInscritosAtivos();
     }
 
-    // --- Passo 3.1: registaAnulacao ---
+    // --- Passo 3: Selecionar Curso ---
+    public void selecionarCurso(String sigla) {
+        // Não selecionamos por ID de inscrição, mas sim pelo Curso (que vem da UI)
+        this.cursoSelecionado = instituicao.getCurso(sigla);
+    }
+
+    public String getDadosCurso() {
+        return (cursoSelecionado != null) ? cursoSelecionado.toString() : "";
+    }
+
+    // --- Passo 4: Registar Anulação (CORRIGIDO) ---
     public boolean registaAnulacao() {
-        if (this.aluno != null && this.inscricaoSelecionada != null) {
-            // O aluno trata da lógica de anular a SUA inscrição
-            return this.aluno.registaAnulacao(this.inscricaoSelecionada);
+        if (this.cursoSelecionado != null && this.alunoLogado != null) {
+            // Chamamos diretamente o método que criámos na classe Aluno
+            return this.alunoLogado.registarAnulacao(this.cursoSelecionado);
         }
         return false;
     }

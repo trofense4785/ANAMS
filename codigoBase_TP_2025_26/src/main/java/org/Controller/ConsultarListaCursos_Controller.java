@@ -4,6 +4,7 @@ import org.Model.Curso;
 import org.Model.EstadoCurso;
 import org.Model.Instituicao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ConsultarListaCursos_Controller {
@@ -40,5 +41,18 @@ public class ConsultarListaCursos_Controller {
             return curso.toString();
         }
         return "Curso não encontrado.";
+    }
+
+    public List<EstadoCurso> getTodosEstadosPossiveis() {
+        List<EstadoCurso> estados = new ArrayList<>();
+
+        // Criar manualmente as opções que o enunciado define
+        estados.add(new EstadoCurso(0, "A iniciar"));
+        estados.add(new EstadoCurso(1, "Ativo"));
+        estados.add(new EstadoCurso(2, "Suspenso"));
+        estados.add(new EstadoCurso(3, "Cancelado"));
+        estados.add(new EstadoCurso(4, "Concluído"));
+
+        return estados;
     }
 }

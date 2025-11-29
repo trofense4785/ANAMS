@@ -63,6 +63,13 @@ public class AlterarEstadoCurso_Controller {
 
     // Método auxiliar para a UI preencher a ComboBox de estados
     public EstadoCurso[] getEstadosPossiveis() {
-        return EstadoCurso.values();
+        // Criar o array manualmente com as constantes estáticas
+        return new EstadoCurso[] {
+                EstadoCurso.A_INICIAR,
+                EstadoCurso.ATIVO,
+                EstadoCurso.SUSPENSO,
+                EstadoCurso.CANCELADO,
+                EstadoCurso.CONCLUIDO
+        };
     }
 }

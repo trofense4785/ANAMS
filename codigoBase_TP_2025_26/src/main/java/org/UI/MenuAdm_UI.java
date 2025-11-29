@@ -6,6 +6,7 @@
 package org.UI;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 import utils.Utils;
 import org.Model.Instituicao;
@@ -13,36 +14,55 @@ import org.Model.Instituicao;
  *
  * @author Dulce Mota <mdm@isep.ipp.pt>
  */
-public class MenuAdm_UI
-{
+public class MenuAdm_UI {
+
     private Instituicao instituicao;
-    private String opcao;
+    private Scanner sc;
 
-    public MenuAdm_UI(Instituicao instituicao)
-    {
+    public MenuAdm_UI(Instituicao instituicao) {
         this.instituicao = instituicao;
+        this.sc = new Scanner(System.in);
     }
-    public void run() throws IOException
-    {
-        do
-        {
-            System.out.println("###### MENU #####\n\n");
-            System.out.println("1. Registar Coordenador Académico");
 
-            System.out.println("0. Voltar");
+    public void run() {
+        // 1. Simulação de Login de Administrador
+        System.out.println("\n--- Autenticação de Administrador ---");
 
-            opcao = Utils.readLineFromConsole("Escolha uma opção: ");
- 
-            if( opcao.equals("1") )
-            {
-                 // Completar
-                System.out.println("Selecionou a opção: Registar Coordenador Académico");
-                
-            }
+        System.out.print("Username: ");
+        String username = sc.nextLine();
 
+        System.out.print("Password: ");
+        String pass = sc.nextLine();
+
+        // Validação "Hardcoded" para o Super-Utilizador
+        if (!username.equals("admin") || !pass.equals("admin")) {
+            System.out.println("❌ Credenciais incorretas. Acesso negado.");
+            return;
         }
-        while (!opcao.equals("0") );
+
+        System.out.println("✅ Bem-vindo, Administrador.");
+
+        String opcao;
+        do {
+            System.out.println("\n###### MENU ADMINISTRADOR ######");
+            System.out.println("1. Registar Coordenador Académico (UC1)");
+            System.out.println("0. Voltar ao Menu Inicial");
+            System.out.println("################################");
+            System.out.print("Escolha uma opção: ");
+
+            opcao = sc.nextLine();
+
+            switch (opcao) {
+                case "1":
+                    RegistarCA_UI uiRegistarCA = new RegistarCA_UI();
+                    uiRegistarCA.run();
+                    break;
+                case "0":
+                    break;
+                default:
+                    System.out.println("Opção inválida.");
+            }
+        } while (!opcao.equals("0"));
     }
 }
-
 

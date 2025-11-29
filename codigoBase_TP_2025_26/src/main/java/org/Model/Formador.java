@@ -45,6 +45,9 @@ public class Formador {
         this.credenciais = credenciais;
     }
 
+    public Credenciais getCredenciais() {
+        return credenciais;
+    }
 
     // Getters
     public String getCc() {

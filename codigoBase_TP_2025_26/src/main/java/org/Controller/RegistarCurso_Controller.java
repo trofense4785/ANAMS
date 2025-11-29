@@ -31,24 +31,26 @@ public class RegistarCurso_Controller {
         }
     }
 
-    public boolean adicionarModulo(String codigo, String titulo, double cargaHoraria, LocalDate dataInicio, LocalDate dataConclusao,
-                                   Formador formadorResponsavel, double ponderacao, List<SessaoModulo> lstSessoes, List<Classificacao>lstClassificacoes) {
+    // No ficheiro RegistarCurso_Controller.java
+
+    public boolean adicionarModulo(String titulo, double cargaHoraria, LocalDate dataInicio, LocalDate dataConclusao,
+                                   Formador formadorResponsavel, double ponderacao, List<SessaoModulo> lstSessoes) {
+        //                                                                                                       ^
+        //                                                              Repara: REMOVI a 'List<Classificacao>' daqui
 
         if (this.curso == null) return false;
 
-        // --- OPÇÃO RECOMENDADA (SEQUENCIAL) ---
-        // Vai à lista de módulos do curso, vê quantos tem e soma 1.
-        // Exemplo: Se tem 0 módulos, gera "M-1". Se tem 1, gera "M-2".
+        // Gerar código sequencial
         int numeroSequencial = this.curso.getListaModulos().size() + 1;
-        codigo = "M-" + numeroSequencial;
+        String codigoGerado = "M-" + numeroSequencial;
 
-        // --- OPÇÃO UUID (Se preferires arriscar) ---
-        // String codigo = "M-" + java.util.UUID.randomUUID().toString().substring(0, 8);
+        // Cria uma lista de classificações vazia (porque o módulo é novo)
+        List<Classificacao> classificacoesVazias = new java.util.ArrayList<>();
 
-        // 1. Curso cria o módulo (Creator)
-        Modulo m = this.curso.novoModulo(codigo, titulo, cargaHoraria, dataInicio, dataConclusao, formadorResponsavel, ponderacao, lstSessoes, lstClassificacoes);
+        // Chama o método do Curso (Creator) passando a lista vazia no fim
+        Modulo m = this.curso.novoModulo(codigoGerado, titulo, cargaHoraria, dataInicio, dataConclusao, formadorResponsavel, ponderacao, lstSessoes, classificacoesVazias);
 
-        // 2. Tenta adicionar
+        // Adiciona ao curso
         try {
             return this.curso.addModulo(m);
         } catch (IllegalArgumentException e) {

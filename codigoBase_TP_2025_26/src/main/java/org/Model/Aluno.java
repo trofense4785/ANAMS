@@ -5,81 +5,69 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Aluno {
-    private String codigoAluno; // Gerado automaticamente (ex: A-2025-1)
+    private String codigoAluno;
     private String nome;
     private String email;
     private String cc;
     private LocalDate dataNascimento;
-    private Credenciais credenciais;
-    private List<Inscricao> minhasInscricoes;
-    private List<Inscricao> inscricoes;
 
-    // Podes adicionar outros campos herdados da candidatura
+    private Credenciais credenciais;
+
+    // CORREÇÃO: Usar apenas UMA lista para as inscrições
+    private List<Inscricao> minhasInscricoes;
+
+    private List<Anulacao> minhasAnulacoes;
 
     public Aluno(String nome, String email, String cc, LocalDate dataNascimento) {
         this.nome = nome;
         this.email = email;
         this.cc = cc;
         this.dataNascimento = dataNascimento;
+
         this.minhasInscricoes = new ArrayList<>();
-        this.inscricoes = new ArrayList<>();
-        // O código é definido pela Instituição
+        this.minhasAnulacoes = new ArrayList<>();
     }
 
-    public void setCodigoAluno(String codigo) {
-        this.codigoAluno = codigo;
-    }
+    // --- MÉTODOS DE INSCRIÇÃO (UC9) ---
 
     public boolean registarInscricao(Curso curso) {
-        // Validação (Passo 3.1.1.1.2 do diagrama: valida)
-        if (estaInscrito(curso)) {
-            // O aluno já está inscrito
-            return false;
-        }
+        if (estaInscrito(curso)) return false;
 
-
-        // Criação (Passo 3.1.1.1: create(curso))
-        // Nota: O diagrama passa apenas 'curso', mas precisamos do 'this' (aluno) para criar a ligação
         Inscricao ins = new Inscricao(this, curso);
 
-        // Validação interna da inscrição (Passo 3.1.1.1.3: valida(ins))
-        // (Pode ser apenas ver se o objeto foi criado corretamente)
         if (ins.getEstado().equals("ativa")) {
-
-        // Adição à lista (Passo 3.1.1.1.4: addInscricao(ins))
-        return minhasInscricoes.add(ins);
+            return minhasInscricoes.add(ins);
         }
         return false;
     }
 
-    private boolean estaInscrito(Curso c) {
+    // Sinónimo do anterior (para compatibilidade com outros controllers)
+    public boolean inscreverEmCurso(Curso curso) {
+        return registarInscricao(curso);
+    }
+
+    public boolean estaInscrito(Curso c) {
         for (Inscricao i : minhasInscricoes) {
             if (i.getCurso().equals(c) && i.getEstado().equals("ativa")) return true;
         }
         return false;
     }
 
-    public List<String> obterListaInscricoesAsString() {
-        // Passo 1.2.1.1: create lstI
-        List<String> lstI = new ArrayList<>();
+    // --- MÉTODOS DE ANULAÇÃO (UC10) ---
 
-        // Loop sobre arrIns (Passo 1.2.1.2)
-        for (Inscricao ins : this.inscricoes) {
-            // Passo 1.2.1.3: estado = getEstado()
-            // Opt: estado.equals("ativa")
+    public List<String> obterCursosInscritosAtivos() {
+        List<String> listaCursos = new ArrayList<>();
+        for (Inscricao ins : minhasInscricoes) {
             if (ins.getEstado().equalsIgnoreCase("ativa")) {
-                // Passo 1.2.1.4: toString()
-                String str = ins.toString();
-                // Passo 1.2.1.5: add(str)
-                lstI.add(str);
+                String dados = String.format("[%s] %s", ins.getCurso().getSigla(), ins.getCurso().getTitulo());
+                listaCursos.add(dados);
             }
         }
-        return lstI;
+        return listaCursos;
     }
 
-    // --- Passo 2.1.1: obterInscricao(idInscricao) ---
     public Inscricao obterInscricao(String idInscricao) {
-        for (Inscricao ins : inscricoes) {
+        for (Inscricao ins : minhasInscricoes) { // Usa a lista correta
             if (ins.getIdInscricao().equals(idInscricao)) {
                 return ins;
             }
@@ -87,22 +75,31 @@ public class Aluno {
         return null;
     }
 
-    public boolean temInscricaoNoCurso(Curso c) {
+    public boolean registarAnulacao(Curso curso) {
+        Inscricao inscricaoAlvo = null;
         for (Inscricao ins : minhasInscricoes) {
-            if (ins.getCurso().equals(c)) {
-                // Se encontrou qualquer inscrição (Ativa, Cancelada, Concluída), retorna true
+            if (ins.getCurso().equals(curso) && ins.getEstado().equalsIgnoreCase("ativa")) {
+                inscricaoAlvo = ins;
+                break;
+            }
+        }
+
+        if (inscricaoAlvo != null) {
+            Anulacao anulacao = new Anulacao(inscricaoAlvo);
+            if (anulacao.valida()) {
+                this.minhasAnulacoes.add(anulacao);
+                inscricaoAlvo.setEstado("cancelada");
                 return true;
             }
         }
         return false;
     }
 
-    // --- Passo 3.1.1: registaAnulacao(ins) ---
-    public boolean registaAnulacao(Inscricao ins) {
-        if (ins != null) {
-            // Passo 3.1.1.1: setEstado("Cancelada")
-            ins.setEstado("cancelada");
-            return true;
+    // --- MÉTODOS DE CONSULTA (UC12 / UC14) ---
+
+    public boolean temInscricaoNoCurso(Curso c) {
+        for (Inscricao ins : minhasInscricoes) {
+            if (ins.getCurso().equals(c)) return true;
         }
         return false;
     }
@@ -110,89 +107,48 @@ public class Aluno {
     public List<Curso> obterCursosInscritos() {
         List<Curso> cursos = new ArrayList<>();
         for (Inscricao ins : minhasInscricoes) {
-            cursos.add(ins.getCurso()); // Extrai o OBJETO Curso
+            cursos.add(ins.getCurso());
         }
         return cursos;
     }
 
-
     public List<String> getBoletimNotas(Curso curso) {
-        // Passo 2.1.2.1: create() -> Cria a lista de resultados
         List<String> dados = new ArrayList<>();
-
-        // Passo 2.1.2.2: tudoLancado = true (Flag de controlo)
         boolean tudoLancado = true;
 
-        // Passo 2.1.2.3: getListaModulos() (Loop)
         for (Modulo m : curso.getListaModulos()) {
+            Double nota = m.getNotaAluno(this);
 
-            // Passo 2.1.2.4: nota = getNotaAluno(this)
-            Double nota = m.getNotaAluno(this); // Retorna Double (pode ser null)
-
-            // Caixa "alt" do diagrama
             if (nota != null) {
-                // Passo 2.1.2.5: Adiciona nota formatada
                 dados.add(String.format("Módulo %s: %.2f valores", m.getTitulo(), nota));
             } else {
-                // Passo 2.1.2.6: Nota pendente
                 dados.add("Módulo " + m.getTitulo() + ": Pendente");
-
-                // Passo 2.1.2.7: tudoLancado = false
                 tudoLancado = false;
             }
         }
 
-        // Caixa "sd opt" do diagrama (Cálculo da Nota Final)
         if (tudoLancado) {
-            // Passo 2.1.2.8: notaFinal = calcularNota(aluno)
-            // O Curso usa a interface Calculavel para fazer a média ponderada
             double notaFinal = curso.calcularNota(this);
-
-            // Passo 2.1.2.9: Adiciona nota final
             dados.add(String.format(">>> NOTA FINAL DO CURSO: %.2f valores", notaFinal));
         } else {
             dados.add(">>> Nota final indisponível (existem módulos pendentes).");
         }
-
         return dados;
     }
 
+    // --- GETTERS E SETTERS ---
+
+    public void setCodigoAluno(String codigo) { this.codigoAluno = codigo; }
+    public void setCredenciais(Credenciais c) { this.credenciais = c; }
+    public Credenciais getCredenciais() { return credenciais; }
 
     public String getEmail() { return email; }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public String getCc() {
-        return cc;
-    }
-
-    public LocalDate getDataNascimento() {
-        return dataNascimento;
-    }
-
-    public List<Inscricao> getMinhasInscricoes() {
-        return minhasInscricoes;
-    }
-
-    public List<Inscricao> getInscricoes() {
-        return inscricoes;
-    }
-
-    public void setCredenciais(Credenciais credenciais) {
-        this.credenciais = credenciais;
-    }
-
-    // Getter (necessário para validação de login, se implementares)
-    public Credenciais getCredenciais() {
-        return credenciais;
-    }
-
-
+    public String getNome() { return nome; }
+    public String getCc() { return cc; }
+    public LocalDate getDataNascimento() { return dataNascimento; }
 
     @Override
     public String toString() {
-        return String.format("Aluno [%s] %s  %s", codigoAluno, nome, email);
+        return String.format("Aluno [%s] %s (%s)", codigoAluno, nome, email);
     }
 }

@@ -30,28 +30,26 @@ public class FazerInscricaoCurso_Controller {
     /**
      * Passo 1.2: obterListaCursosAsString("A iniciar")
      */
-    public List<String> getListaCursosAIniciar() {
-        // Chama o método da instituição que faz o loop
-        return instituicao.obterListaCursosAsString(EstadoCurso.A_INICIAR);
+    public List<Curso> getCursosDisponiveis() {
+        return instituicao.getCursosPorEstado(EstadoCurso.A_INICIAR);
     }
 
     /**
      * Passo 2.1: obterCurso(sigla)
      */
-    public void selecionarCurso(String sigla) {
-        this.cursoSelecionado = instituicao.getCurso(sigla);
+    public void selecionarCurso(Curso curso) {
+        this.cursoSelecionado = curso;
     }
 
     /**
      * Passo 3.1: registaInscricao()
      */
-    public boolean registaInscricao() {
-        if (this.cursoSelecionado != null && this.alunoLogado != null) {
-            // Diagrama 3.1.1: Controller chama Instituição
-            // A Instituição depois chama o Aluno
-            return instituicao.registarInscricao(this.cursoSelecionado, this.alunoLogado);
-        }
-        return false;
+    public boolean confirmarInscricao() {
+        // Usa as variáveis de instância que guardaste antes
+        if (this.alunoLogado == null || this.cursoSelecionado == null) return false;
+
+        // Chama o método da Instituição (que depois chama o Aluno)
+        return instituicao.registarInscricao(this.cursoSelecionado, this.alunoLogado);
     }
 
     // Auxiliar para a UI mostrar dados antes de confirmar

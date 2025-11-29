@@ -43,6 +43,16 @@ public class ConsultarListaCursosResponsavel_Controller {
         return listaFormatada;
     }
 
+    public String getDadosCurso(String sigla) {
+        // Vai buscar o objeto curso à Instituição usando a sigla
+        Curso c = instituicao.getCurso(sigla);
+
+        if (c != null) {
+            return c.toString();
+        }
+        return "Curso não encontrado.";
+    }
+
     // Se quiseres selecionar um curso para ver detalhes (Passo 2 do diagrama)
     public String getDetalhesCurso(String sigla) {
         // Reutiliza o método de busca da instituição

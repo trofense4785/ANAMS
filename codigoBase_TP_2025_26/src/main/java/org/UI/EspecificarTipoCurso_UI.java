@@ -10,48 +10,71 @@ import utils.Utils;
 import org.Model.Instituicao;
 import org.Controller.EspecificarTipoCurso_Controller;
 
+
+
+import java.util.Scanner;
+
 /**
  *
  * @author Dulce Mota <mdm@isep.ipp.pt>
  */
-public class EspecificarTipoCurso_UI
-{
-    private Instituicao instituicao;
-    private EspecificarTipoCurso_Controller controller;
+public class EspecificarTipoCurso_UI {
 
-    public EspecificarTipoCurso_UI(Instituicao instituicao)
-    {
-        this.instituicao = instituicao;
-        controller = new EspecificarTipoCurso_Controller(instituicao);
+    private final EspecificarTipoCurso_Controller controller;
+    private final Scanner sc;
+
+    public EspecificarTipoCurso_UI() {
+        this.controller = new EspecificarTipoCurso_Controller(Instituicao.getInstance());
+        this.sc = new Scanner(System.in);
     }
 
-    public void run()
-    {
-        System.out.println("\nNovo Tipo de Curso:");
-        controller.novoTipoCurso();
+    public void run() {
+        System.out.println("\n========================================");
+        System.out.println("      ESPECIFICAR TIPO DE CURSO         ");
+        System.out.println("========================================");
 
-        introduzDados();
+        try {
+            // 1. Solicitar dados (Passo 2 do Diagrama de Sequência)
+            System.out.print("Introduza a Sigla (ex: LIC, POS, MEST): ");
+            String sigla = sc.nextLine();
 
-        apresentaDados();
+            System.out.print("Introduza a Descrição (ex: Licenciatura, Pós-Graduação): ");
+            String descricao = sc.nextLine();
 
-        if (Utils.confirma("Confirma os dados? (S/N)")) 
-        {
-            if (controller.especificarTipoCurso()) {
-                System.out.println("Dados do tipo de curso guardados com sucesso.");
+            // 2. Enviar para o Controller (Passo 2.1)
+            // Cria o objeto em memória. Se os dados estiverem vazios, a classe TipoCurso lança logo erro.
+            controller.novoTipoCurso(sigla, descricao);
+
+            // 3. Apresentar dados para confirmação (Passo 2.3)
+            System.out.println("\n--- Resumo do Novo Tipo ---");
+            System.out.println(controller.getTipoCursoString());
+            System.out.println("---------------------------");
+
+            // 4. Confirmar (Passo 3)
+            System.out.print("Deseja registar este Tipo de Curso? (S/N): ");
+            String resposta = sc.nextLine();
+
+            if (resposta.equalsIgnoreCase("S")) {
+                // 5. Registar (Passo 3.1)
+                // Aqui é que a Instituição verifica se a SIGLA é única
+                if (controller.registarTipoCurso()) {
+                    System.out.println("\n✅ SUCESSO: Tipo de Curso registado com êxito.");
+                } else {
+                    System.out.println("\n❌ ERRO: Não foi possível registar (Operação falhou na Instituição).");
+                }
             } else {
-                System.out.println("Não foi possível guardar os dados do tipo de curso.");
+                System.out.println("\n⚠️ Operação cancelada pelo utilizador.");
             }
+
+        } catch (IllegalArgumentException e) {
+            // Captura erros de validação (Sigla vazia, ou Sigla Duplicada se a validação for imediata)
+            System.out.println("\n❌ ERRO: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("\n❌ Ocorreu um erro inesperado: " + e.getMessage());
         }
-    }
-    
-    private void introduzDados() {
-        String sigla = Utils.readLineFromConsole("Introduza a sigla: ");
-        String descricao = Utils.readLineFromConsole("Introduza uma descrição: ");
-        controller.setDados(sigla, descricao);
-    }
- 
-    private void apresentaDados() 
-    {
-        System.out.println("\nTipo de curso:\n" + controller.getTipoCursoAsString());
+
+        System.out.println("\nPressione ENTER para continuar...");
+        sc.nextLine();
     }
 }
+

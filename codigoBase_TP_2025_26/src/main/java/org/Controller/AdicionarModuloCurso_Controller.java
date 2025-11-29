@@ -47,18 +47,28 @@ public class AdicionarModuloCurso_Controller {
         this.curso = curso;
     }
 
+    public Curso getCursoSelecionado() {
+        // Retorna a variável 'curso' que definiste no topo da classe
+        return this.curso;
+    }
+
     // --- Passo 2: Definição do Módulo (Sem formador ainda) ---
 
-    public void criarModulo(String codigo, String titulo, double cargaHoraria, LocalDate dataInicio, LocalDate dataConclusao, Formador formadorResponsavel, double ponderacao, List<SessaoModulo>lstSessoes, List<Classificacao>lstClassificacoes) {
+    public void criarModulo(String titulo, double cargaHoraria, LocalDate dataInicio, LocalDate dataConclusao, double ponderacao) {
+        // 1. Validação de segurança
         if (this.curso == null) throw new IllegalStateException("Nenhum curso selecionado.");
 
-        // Gerar ID Sequencial baseado na lista atual deste curso
+        // 2. Gerar Código Sequencial Automaticamente (Requisito IT2)
         int sequencial = this.curso.getListaModulos().size() + 1;
-        codigo = "M-" + sequencial;
+        String codigo = "M-" + sequencial;
 
-        // O Curso cria o módulo (Creator), mas ainda sem sessões e sem formador definitivo
-        // Passamos listas vazias e null no formador para preencher nos passos seguintes
-        this.modulo = this.curso.novoModulo(codigo, titulo, cargaHoraria, dataInicio, dataConclusao, null, ponderacao, lstSessoes, lstClassificacoes);
+        // 3. Preparar listas vazias (porque o módulo é novo)
+        List<SessaoModulo> sessoesVazias = new ArrayList<>();
+        List<Classificacao> classificacoesVazias = new ArrayList<>();
+
+        // 4. Criar o módulo
+        // Passamos 'null' no Formador porque ele só é escolhido no Passo 4 da UI
+        this.modulo = this.curso.novoModulo(codigo, titulo, cargaHoraria, dataInicio, dataConclusao, null, ponderacao, sessoesVazias, classificacoesVazias);
     }
 
     // --- Passo 3: Adicionar Sessões (Loop na UI) ---
