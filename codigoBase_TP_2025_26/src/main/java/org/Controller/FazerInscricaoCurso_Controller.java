@@ -12,6 +12,13 @@ public class FazerInscricaoCurso_Controller {
 
     public FazerInscricaoCurso_Controller() {
         this.instituicao = Instituicao.getInstance();
+        String emailLogado = Sessao.getInstance().getEmailUsuarioLogado();
+        this.alunoLogado = instituicao.getAlunoPorEmail(emailLogado);
+
+        // Se não houver aluno logado (ex: sessão expirada ou bug), lançamos erro logo aqui
+        if (this.alunoLogado == null) {
+            throw new IllegalStateException("Erro: Nenhum aluno autenticado na sessão.");
+        }
     }
 
     /**
@@ -19,13 +26,7 @@ public class FazerInscricaoCurso_Controller {
      * No código real, em vez de receber o email da UI (inseguro),
      * vamos buscar o email da Sessão e pedir à Instituição.
      */
-    public void iniciarInscricao() {
-        String emailLogado = Sessao.getInstance().getEmailUsuarioLogado();
-        // Diagrama 1.1: O controller pede à instituição o objeto aluno
-        this.alunoLogado = instituicao.getAlunoPorEmail(emailLogado);
 
-        if (this.alunoLogado == null) throw new IllegalStateException("Erro: Aluno não identificado.");
-    }
 
     /**
      * Passo 1.2: obterListaCursosAsString("A iniciar")

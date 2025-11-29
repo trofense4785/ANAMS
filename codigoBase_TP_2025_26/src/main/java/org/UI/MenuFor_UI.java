@@ -66,7 +66,7 @@ public class MenuFor_UI {
     // --- Lógica de Autenticação de Formador ---
     private boolean fazerLogin() {
         System.out.println("\n--- Login Formador ---");
-        System.out.print("Email: ");
+        System.out.print("Username: ");
         String email = sc.nextLine();
         System.out.print("Password: ");
         String pass = sc.nextLine();

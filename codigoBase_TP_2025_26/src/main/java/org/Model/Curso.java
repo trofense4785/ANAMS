@@ -3,6 +3,7 @@ package org.Model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Curso implements Calculavel {
     private String titulo;
@@ -62,7 +63,18 @@ public class Curso implements Calculavel {
     }
 
     public boolean isResponsavel(Formador formador) {
-        return formadoresResponsaveis.contains(formador);
+        if (this.formadoresResponsaveis.contains(formador)) {
+            return true;
+        }
+
+        // 2. CRUCIAL: Verifica se é responsável por algum MÓDULO deste curso
+        for (Modulo modulo : this.listaModulos) {
+            if (modulo.getFormadorResponsavel().equals(formador)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private boolean validarTransicaoEstado(EstadoCurso novoEstado) {
@@ -126,6 +138,7 @@ public class Curso implements Calculavel {
     public String toString() {
         return String.format("Curso: %s (%s) | Estado Atual: %s", getTitulo(), getSigla(), estado);
     }
+
 }
 
 

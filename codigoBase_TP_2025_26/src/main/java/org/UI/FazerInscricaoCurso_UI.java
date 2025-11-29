@@ -58,7 +58,7 @@ public class FazerInscricaoCurso_UI {
                     // O Controller delega no Aluno, que valida se já está inscrito e cria o registo
                     if (controller.confirmarInscricao()) {
                         System.out.println("\n✅ SUCESSO: Inscrição realizada!");
-                        System.out.println("ℹ️ Pode consultar o estado em 'Minhas Inscrições'.");
+
                     } else {
                         System.out.println("\n❌ ERRO: Não foi possível realizar a inscrição.");
                         System.out.println("(Verifique se já se encontra inscrito neste curso).");

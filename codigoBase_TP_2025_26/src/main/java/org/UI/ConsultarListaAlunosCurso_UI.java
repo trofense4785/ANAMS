@@ -1,6 +1,7 @@
 package org.UI;
 
 import org.Controller.ConsultarListaAlunosCurso_Controller;
+import org.Model.Curso;
 
 import java.util.List;
 import java.util.Scanner;
@@ -93,15 +94,20 @@ public class ConsultarListaAlunosCurso_UI {
     }
 
     private String extrairSigla(String textoCurso) {
-        // Assume formato "[SIGLA] Nome do Curso"
+        // Formato esperado do toString: "Curso: Titulo (SIGLA) | ..."
         try {
-            String[] partes = textoCurso.split("]");
-            if (partes.length > 0) {
-                return partes[0].replace("[", "").trim();
+            // Procura a posição do primeiro '(' e do primeiro ')'
+            int inicio = textoCurso.indexOf("(");
+            int fim = textoCurso.indexOf(")");
+
+            if (inicio != -1 && fim != -1 && fim > inicio) {
+                // Retorna o que está entre os parênteses
+                return textoCurso.substring(inicio + 1, fim).trim();
             }
         } catch (Exception e) {
-            // Ignora
+            System.out.println("Erro ao extrair sigla: " + e.getMessage());
         }
         return "";
     }
+
 }

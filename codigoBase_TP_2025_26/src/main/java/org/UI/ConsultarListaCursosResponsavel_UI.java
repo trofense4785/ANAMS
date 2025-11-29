@@ -84,16 +84,18 @@ public class ConsultarListaCursosResponsavel_UI {
      */
     private String extrairSigla(String textoCurso) {
         try {
-            // Divide onde está o fecho de parentesis "]"
-            String[] partes = textoCurso.split("]");
+            // O formato é: "Curso: Titulo (SIGLA) | Estado..."
+            // Vamos procurar a última abertura de parênteses "(" e o último fecho ")"
+            int inicio = textoCurso.lastIndexOf("(");
+            int fim = textoCurso.lastIndexOf(")");
 
-            // Pega na primeira parte "[MAT" e remove o "["
-            if (partes.length > 0) {
-                return partes[0].replace("[", "").trim();
+            if (inicio != -1 && fim != -1 && inicio < fim) {
+                // Extrai o que está lá dentro (ex: "JAV01")
+                return textoCurso.substring(inicio + 1, fim);
             }
         } catch (Exception e) {
-            // Se falhar, não faz mal, o controller depois avisa que não encontrou
+            System.out.println("Erro ao ler sigla: " + e.getMessage());
         }
-        return "";
+        return ""; // Retorna vazio se falhar
     }
 }
