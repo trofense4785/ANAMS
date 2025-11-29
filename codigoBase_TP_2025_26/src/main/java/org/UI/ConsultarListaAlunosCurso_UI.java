@@ -22,17 +22,15 @@ public class ConsultarListaAlunosCurso_UI {
         System.out.println("========================================");
 
         try {
-            // 1. Obter Cursos do Formador (Reutiliza lógica segura)
             List<String> meusCursos = controller.getMeusCursos();
 
             if (meusCursos.isEmpty()) {
-                System.out.println("ℹ️ Não está associado a nenhum curso neste momento.");
+                System.out.println(" Não está associado a nenhum curso neste momento.");
                 System.out.println("Pressione ENTER para voltar...");
                 sc.nextLine();
                 return;
             }
 
-            // 2. Apresentar Cursos
             System.out.println("Selecione o curso para ver a turma:");
             for (int i = 0; i < meusCursos.size(); i++) {
                 System.out.println((i + 1) + ". " + meusCursos.get(i));
@@ -42,19 +40,16 @@ public class ConsultarListaAlunosCurso_UI {
             if (opcao == 0) return;
 
             if (opcao > 0 && opcao <= meusCursos.size()) {
-                // 3. Selecionar Curso
                 String linhaCurso = meusCursos.get(opcao - 1);
                 String sigla = extrairSigla(linhaCurso);
 
                 controller.selecionarCurso(sigla);
 
-                // 4. Obter Lista de Alunos
                 List<String> listaAlunos = controller.getListaAlunos();
 
-                // 5. Apresentar Alunos
                 System.out.println("\n--- Lista de Alunos (" + sigla + ") ---");
                 if (listaAlunos.isEmpty()) {
-                    System.out.println("ℹ️ Não existem alunos inscritos (ou histórico).");
+                    System.out.println(" Não existem alunos inscritos (ou histórico).");
                 } else {
                     for (String alunoStr : listaAlunos) {
                         System.out.println("- " + alunoStr);
@@ -66,13 +61,11 @@ public class ConsultarListaAlunosCurso_UI {
             }
 
         } catch (IllegalStateException e) {
-            // Erro de sessão (se não for formador ou não estiver logado)
-            System.out.println("\n❌ ERRO DE ACESSO: " + e.getMessage());
+            System.out.println("\n ERRO DE ACESSO: " + e.getMessage());
         } catch (SecurityException e) {
-            // Se tentar aceder a um curso que não é dele
-            System.out.println("\n❌ SEGURANÇA: " + e.getMessage());
+            System.out.println("\n SEGURANÇA: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("\n❌ Ocorreu um erro: " + e.getMessage());
+            System.out.println("\n Ocorreu um erro: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -80,7 +73,6 @@ public class ConsultarListaAlunosCurso_UI {
         sc.nextLine();
     }
 
-    // --- Métodos Auxiliares ---
 
     private int lerInteiro(String msg) {
         while (true) {
@@ -94,14 +86,11 @@ public class ConsultarListaAlunosCurso_UI {
     }
 
     private String extrairSigla(String textoCurso) {
-        // Formato esperado do toString: "Curso: Titulo (SIGLA) | ..."
         try {
-            // Procura a posição do primeiro '(' e do primeiro ')'
             int inicio = textoCurso.indexOf("(");
             int fim = textoCurso.indexOf(")");
 
             if (inicio != -1 && fim != -1 && fim > inicio) {
-                // Retorna o que está entre os parênteses
                 return textoCurso.substring(inicio + 1, fim).trim();
             }
         } catch (Exception e) {

@@ -35,26 +35,23 @@ public class RegistarCurso_Controller {
         }
     }
 
-    // No ficheiro RegistarCurso_Controller.java
+
 
     public boolean adicionarModulo(String titulo, double cargaHoraria, LocalDate dataInicio, LocalDate dataConclusao,
                                    Formador formadorResponsavel, double ponderacao, List<SessaoModulo> lstSessoes) {
-        //                                                                                                       ^
-        //                                                              Repara: REMOVI a 'List<Classificacao>' daqui
 
         if (this.curso == null) return false;
 
-        // Gerar código sequencial
+
         int numeroSequencial = this.curso.getListaModulos().size() + 1;
         String codigoGerado = "M-" + numeroSequencial;
 
-        // Cria uma lista de classificações vazia (porque o módulo é novo)
+
         List<Classificacao> classificacoesVazias = new java.util.ArrayList<>();
 
-        // Chama o método do Curso (Creator) passando a lista vazia no fim
+
         Modulo m = this.curso.novoModulo(codigoGerado, titulo, cargaHoraria, dataInicio, dataConclusao, formadorResponsavel, ponderacao, lstSessoes, classificacoesVazias);
 
-        // Adiciona ao curso
         try {
             return this.curso.addModulo(m);
         } catch (IllegalArgumentException e) {
@@ -72,7 +69,7 @@ public class RegistarCurso_Controller {
 
 
     public boolean registarCurso() {
-        // Validação e Adição são feitas dentro do método adicionarCurso() da Instituicao
+
         return this.instituicao.registarCurso(this.curso);
     }
 

@@ -7,10 +7,7 @@ import org.Model.CA;
 import org.Model.Sessao;
 import utils.Utils;
 import org.Model.Instituicao;
-/**
- *
- * @author Dulce Mota <mdm@isep.ipp.pt>
- */
+
 public class MenuCA_UI {
 
     private Instituicao instituicao;
@@ -22,12 +19,11 @@ public class MenuCA_UI {
     }
 
     public void run() {
-        // --- PASSO 1: LOGIN DO CA ---
         if (!fazerLogin()) {
-            return; // Se o login falhar, volta ao menu inicial
+            return;
         }
 
-        // --- PASSO 2: MENU DE FUNCIONALIDADES ---
+
         String opcao;
         do {
             System.out.println("\n###### MENU COORDENADOR ACADÉMICO ######");
@@ -70,7 +66,6 @@ public class MenuCA_UI {
                     new DecisaoCandidatura_UI().run();
                     break;
                 case "0":
-                    // Fazer logout ao sair
                     Sessao.getInstance().logout();
                     System.out.println("Sessão terminada.");
                     break;
@@ -80,12 +75,11 @@ public class MenuCA_UI {
         } while (!opcao.equals("0"));
     }
 
-    // --- Lógica de Autenticação ---
     private boolean fazerLogin() {
         CA ca = instituicao.getCA();
 
         if (ca == null) {
-            System.out.println("❌ ERRO: Ainda não existe um Coordenador Académico registado no sistema.");
+            System.out.println(" ERRO: Ainda não existe um Coordenador Académico registado no sistema.");
             System.out.println("Peça ao Administrador para realizar o registo (UC1).");
             return false;
         }
@@ -96,18 +90,16 @@ public class MenuCA_UI {
         System.out.print("Password: ");
         String pass = sc.nextLine();
 
-        // Verifica as credenciais
         if (ca.getCredenciais() != null &&
                 ca.getCredenciais().getUsername().equals(user) &&
                 ca.getCredenciais().getPassword().equals(pass)) {
 
-            // Sucesso: Regista na Sessão
             Sessao.getInstance().login(ca.getEmail());
-            System.out.println("✅ Bem-vindo, " + ca.getNome() + "!");
+            System.out.println(" Bem-vindo, " + ca.getNome() + "!");
             return true;
         }
 
-        System.out.println("❌ Credenciais inválidas.");
+        System.out.println(" Credenciais inválidas.");
         return false;
     }
 }

@@ -10,7 +10,6 @@ public class Credenciais {
         this.password = password;
     }
 
-    // --- ESTES SÃO OS MÉTODOS QUE FALTAM ---
 
     public String getUsername() {
         return username;

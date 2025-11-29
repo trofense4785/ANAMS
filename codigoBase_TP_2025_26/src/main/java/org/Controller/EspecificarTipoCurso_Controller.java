@@ -9,10 +9,7 @@ package org.Controller;
 import org.Model.Instituicao;
 import org.Model.TipoCurso;
 
-/**
- *
- * @author Dulce Mota <mdm@isep.ipp.pt>
- */
+
 public class EspecificarTipoCurso_Controller
 {
     private final Instituicao instituicao;
@@ -30,11 +27,10 @@ public class EspecificarTipoCurso_Controller
 
 
     public boolean registarTipoCurso() {
-        // Valida unicidade e guarda
         return this.instituicao.registarTipoCurso(this.tipoCurso);
     }
 
-    // Auxiliar para a UI mostrar o que vai ser gravado
+
     public String getTipoCursoString() {
         if (this.tipoCurso != null) {
             return this.tipoCurso.toString();

@@ -11,10 +11,7 @@ import java.util.Scanner;
 
 import utils.Utils;
 import org.Model.Instituicao;
-/**
- *
- * @author Dulce Mota <mdm@isep.ipp.pt>
- */
+
 public class MenuCad_UI {
 
     private Instituicao instituicao;
@@ -38,7 +35,6 @@ public class MenuCad_UI {
 
             switch (opcao) {
                 case "1":
-                    // Chama a UI do UC7
                     SubmeterCandidatura_UI ui = new SubmeterCandidatura_UI();
                     ui.run();
                     break;

@@ -12,10 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- *
- * @author Dulce Mota <mdm@isep.ipp.pt>
- */
+
 public class Instituicao
 {
     private static Instituicao instance;
@@ -50,11 +47,11 @@ public class Instituicao
         return new TipoCurso(sigla, descricao);
     }
 
-    // 2. Validação Global (Unicidade)
+
     public boolean validaTipoCurso(TipoCurso tipo) {
         if (tipo == null) return false;
 
-        // Regra: Sigla tem de ser única
+
         for (TipoCurso t : lstTiposCurso) {
             if (t.getSigla().equalsIgnoreCase(tipo.getSigla())) {
                 throw new IllegalArgumentException("Erro: Já existe um tipo de curso com a sigla " + tipo.getSigla());
@@ -63,7 +60,7 @@ public class Instituicao
         return true;
     }
 
-    // 3. Gravação
+
     public boolean registarTipoCurso(TipoCurso tipo) {
         if (tipo.valida() && validaTipoCurso(tipo)) {
             return lstTiposCurso.add(tipo);
@@ -85,7 +82,7 @@ public class Instituicao
     public boolean validaCurso(Curso curso) {
         if (curso == null) return false;
 
-        // Validação de Unicidade da Sigla
+
         for (Curso c : lstCursos) {
             if (c.getSigla().equalsIgnoreCase(curso.getSigla())) {
                 return false;
@@ -117,33 +114,33 @@ public class Instituicao
     public boolean validaCA(CA novoCA) {
         if (novoCA == null) return false;
 
-        // Se já existir um CA atribuído, não deixa criar outro.
+
         if (this.ca != null) {
             throw new IllegalStateException("Erro: Já existe um Coordenador Académico registado.");
         }
 
-        // Aqui podes adicionar outras validações (ex: verificar se o email já é usado por um Formador)
+
         return true;
     }
     public boolean registarCA(CA novoCA) {
         if (validaCA(novoCA)) {
-            // 1. Gerar credenciais
-            String username = "admin"; // Ou novoCA.getEmail()
+
+            String username = "admin";
             String password = java.util.UUID.randomUUID().toString().substring(0, 8);
 
             Credenciais creds = new Credenciais(username, password);
             novoCA.setCredenciais(creds);
 
-            // 2. Gravar
+
             this.ca = novoCA;
 
-            // --- ADICIONA ESTAS LINHAS AQUI PARA VERES A PASSWORD ---
+
             System.out.println("\n*****************************************");
             System.out.println(" Credenciais Geradas:");
             System.out.println(" Login: " + username);
             System.out.println(" Password: " + password);
             System.out.println("*****************************************\n");
-            // --------------------------------------------------------
+
 
             return true;
         }
@@ -159,53 +156,74 @@ public class Instituicao
     public boolean validaFormador(Formador formador) {
         if (formador == null) return false;
 
-        // 1. Validação Local (formato dos dados)
+
         if (!formador.valida()) return false;
 
-        // 2. Validação Global (UNICIDADE)
+
         for (Formador f : lstFormadores) {
 
-            // Verifica CC
+
             if (f.getCc().equals(formador.getCc())) {
                 throw new IllegalArgumentException("Erro: CC já registado noutro formador.");
             }
 
-            // Verifica Email
+
             if (f.getEmail().equalsIgnoreCase(formador.getEmail())) {
                 throw new IllegalArgumentException("Erro: Email já registado noutro formador.");
             }
 
-            // --- NOVA VERIFICAÇÃO: CONTACTO ---
+
             if (f.getContacto().equals(formador.getContacto())) {
                 throw new IllegalArgumentException("Erro: Contacto telefónico já registado noutro formador.");
             }
-            // ----------------------------------
+
         }
         return true;
     }
 
     public boolean registarFormador(Formador formador) {
         if (validaFormador(formador)) {
-            // 1. Gerar ID Único Automático (Requisito 99)
-            // Exemplo: "F" + número sequencial (F1, F2...)
+
+
             String novoId = "FOR" + (lstFormadores.size() + 1);
             formador.setIdFormador(novoId);
 
-            // 2. Gerar Credenciais (Requisito 99)
-            String username = formador.getEmail(); // Usar email como login
-            String password = UUID.randomUUID().toString().substring(0, 8); // Pass aleatória
+
+            String username = formador.getEmail();
+            String password = UUID.randomUUID().toString().substring(0, 8);
 
             Credenciais creds = new Credenciais(username, password);
             formador.setCredenciais(creds);
 
-            // 3. Adicionar à lista
+
             boolean adicionou = lstFormadores.add(formador);
 
             if (adicionou) {
-                // Simular envio de email (console log)
+
                 System.out.println(">> Email enviado a " + formador.getEmail() + " | Pass: " + password);
             }
             return adicionou;
+        }
+        return false;
+    }
+
+    public boolean existeFormadorComCC(String cc) {
+        for (Formador f : lstFormadores) {
+            if (f.getCc().equals(cc)) return true;
+        }
+        return false;
+    }
+
+    public boolean existeFormadorComEmail(String email) {
+        for (Formador f : lstFormadores) {
+            if (f.getEmail().equalsIgnoreCase(email)) return true;
+        }
+        return false;
+    }
+
+    public boolean existeFormadorComContacto(String contacto) {
+        for (Formador f : lstFormadores) {
+            if (f.getContacto().equals(contacto)) return true;
         }
         return false;
     }
@@ -216,29 +234,29 @@ public class Instituicao
 
         for (Curso c : lstCursos) {
             for (Modulo m : c.getListaModulos()) {
-            // Só verificamos módulos onde este formador é o responsável
+
                 if (m.getFormadorResponsavel() != null &&
                     m.getFormadorResponsavel().equals(formador)) {
 
                     for (SessaoModulo sessaoExistente : m.getLstSessoes()) {
                         if (haSobreposicao(sessaoExistente, novaSessao)){
-                            return false; // Está ocupado!
+                            return false;
                         }
                     }
                 }
             }
         }
-        return true; // Está livre
+        return true;
     }
 
     public boolean validarDisponibilidadeSala(String sala, SessaoModulo novaSessao) {
         for (Curso c : lstCursos) {
             for (Modulo m : c.getListaModulos()) {
                 for (SessaoModulo sessaoExistente : m.getLstSessoes()) {
-                    // Se for a mesma sala E houver sobreposição de horas
+
                     if (sessaoExistente.getSala().equalsIgnoreCase(sala) &&
                             haSobreposicao(sessaoExistente, novaSessao)) {
-                        return false; // Sala ocupada!
+                        return false;
                     }
                 }
             }
@@ -247,7 +265,7 @@ public class Instituicao
     }
 
     private boolean haSobreposicao(SessaoModulo s1, SessaoModulo s2) {
-        // Lógica temporal: (Inicio1 < Fim2) E (Inicio2 < Fim1)
+
         LocalDateTime inicio1 = s1.getDataHoraInicio();
         LocalDateTime fim1 = s1.getDataHoraFim();
 
@@ -257,26 +275,20 @@ public class Instituicao
         return inicio1.isBefore(fim2) && inicio2.isBefore(fim1);
     }
 
-    // Getter necessário para o Controller
+
     public List<Curso> getLstCursos() {
         return lstCursos;
     }
 
 // UC6
 
-    /**
-     * Passo 2.1.1: getCursosPorEstado(estado)
-     * Implementa o LOOP do diagrama para filtrar a lista.
-     * * @param estado (0-A iniciar, 1-Ativo, 2-Suspenso, 3-Cancelado, 4-Concluído)
-     * Se estado for -1, retorna todos.
-     */
+
     public List<Curso> getCursosPorEstado(EstadoCurso estadoFiltro) {
 
         List<Curso> listaFiltrada = new ArrayList<>();
 
         for (Curso cur : this.lstCursos) {
-            // 2. Lógica de "Ver Todos":
-            // Em vez de usares o número -1, usas 'null' para dizer "sem filtro"
+
             if (estadoFiltro == null || cur.getEstado() == estadoFiltro) {
                 listaFiltrada.add(cur);
             }
@@ -285,10 +297,7 @@ public class Instituicao
         return listaFiltrada;
     }
 
-    /**
-     * Passo 3.1.1: cur = obterCurso(sigla)
-     * Procura um curso específico pela sigla.
-     */
+
     public Curso getCurso(String sigla) {
         for (Curso c : lstCursos) {
             if (c.getSigla().equalsIgnoreCase(sigla)) {
@@ -304,40 +313,35 @@ public class Instituicao
         return new Candidatura(nome, dataNascimento, habilitacoes, email, cc, genero);
     }
 
-    /**
-     * Validação Global: Verifica se o CC ou Email já têm candidatura ou são alunos.
-     */
+
     public boolean validaCandidatura(Candidatura cand) {
         if (cand == null) return false;
 
-        // 1. Valida formato interno
+
         if (!cand.valida()) return false;
 
-        // 2. Valida Unicidade nas Candidaturas
+
         for (Candidatura c : lstCandidaturas) {
             if (c.getCc().equals(cand.getCc())) throw new IllegalArgumentException("Já existe uma candidatura com este CC.");
             if (c.getEmail().equalsIgnoreCase(cand.getEmail())) throw new IllegalArgumentException("Já existe uma candidatura com este Email.");
         }
 
-        // NOTA: Idealmente, aqui também verificarias a 'lstAlunos' para ver se a pessoa já é aluna da escola.
+
 
         return true;
     }
 
-    /**
-     * Regista, Gera Credenciais e Envia Email.
-     */
+
     public boolean registarCandidatura(Candidatura cand) {
         if (validaCandidatura(cand)) {
 
-            // Requisito [109]: Enviar credenciais após submissão
-            String username = cand.getEmail();
-            String password = UUID.randomUUID().toString().substring(0, 8); // Password aleatória
 
+            String username = cand.getEmail();
+            String password = UUID.randomUUID().toString().substring(0, 8);
             Credenciais credenciais = new Credenciais(username, password);
             cand.setCredenciais(credenciais);
 
-            // Simulação de envio de email
+
             System.out.println("Email enviado para " + cand.getEmail() + " | Login: " + username + " Pass: " + password);
             System.out.println("Instruções enviadas: Aguarde validação do Coordenador.");
 
@@ -348,36 +352,30 @@ public class Instituicao
 
 // UC8
 
-    /**
-     * Retorna apenas as candidaturas que ainda não foram tratadas (Estado 0).
-     */
+
     public List<Candidatura> getCandidaturasPendentes() {
         List<Candidatura> pendentes = new ArrayList<>();
         for (Candidatura c : lstCandidaturas) {
-            if (c.getEstado() == 0) { // 0 = Submetida/Pendente
+            if (c.getEstado() == 0) {
                 pendentes.add(c);
             }
         }
         return pendentes;
     }
 
-    /**
-     * Processa a decisão final.
-     * Se for ACEITE -> Cria Aluno.
-     * Sempre -> Envia Email.
-     */
+
     public boolean registarDecisaoCandidatura(Candidatura cand, boolean aceite, String justificacao, LocalDate dataDecisao) {
         if (cand == null) return false;
 
-        // 1. Atualizar a Candidatura
+
         cand.registarDecisao(aceite, justificacao, dataDecisao);
 
-        // 2. Se ACEITE -> Criar Aluno Automaticamente [cite: 20]
+
         if (aceite) {
             criarAlunoDeCandidatura(cand);
         }
 
-        // 3. Notificar Candidato (Simulação)
+
         String decisao = aceite ? "ACEITE" : "REJEITADA";
         System.out.println("Email para " + cand.getEmail() + ": A sua candidatura foi " + decisao + ".");
         System.out.println("Justificação: " + justificacao);
@@ -385,29 +383,24 @@ public class Instituicao
         return true;
     }
 
-    /**
-     * Método privado para transformar Candidato em Aluno.
-     */
+
     private void criarAlunoDeCandidatura(Candidatura cand) {
-        // 1. Criar o objeto Aluno com os dados pessoais
+
         Aluno novoAluno = new Aluno(cand.getNome(), cand.getEmail(), cand.getCc(), cand.getDataNascimento());
 
-        // 2. Gerar e atribuir o Código de Aluno (Requisito IT2)
+
         int sequencial = lstAlunos.size() + 1;
         String codigo = "AL-" + java.time.Year.now().getValue() + "-" + sequencial;
         novoAluno.setCodigoAluno(codigo);
 
-        // 3. ⚠️ TRANSFERIR AS CREDENCIAIS (Correção)
-        // O aluno herda o login/password que tinha como candidato
+
         if (cand.getCredenciais() != null) {
             novoAluno.setCredenciais(cand.getCredenciais());
         } else {
-            // Caso de segurança: se por algum motivo não tiver, gera novas
-            // (Isto não deve acontecer se o fluxo UC7 estiver correto)
-            // novoAluno.setCredenciais(new Credenciais(cand.getEmail(), "novaPass123"));
+
         }
 
-        // 4. Guardar na lista
+
         lstAlunos.add(novoAluno);
 
         System.out.println("Aluno criado com sucesso: " + codigo);
@@ -419,8 +412,6 @@ public class Instituicao
 
     public List<String> obterListaCursosAsString(Aluno aluno) {
         if (aluno != null) {
-            // Delega no Aluno (Expert) a responsabilidade de formatar a lista
-            // Tens de garantir que a classe Aluno tem o método 'obterCursosInscritosAtivos()'
             return aluno.obterCursosInscritosAtivos();
         }
         return new ArrayList<>();
@@ -428,19 +419,15 @@ public class Instituicao
 
 
 
-    /**
-     * Passo 3.1.1: registarInscricao(curso)
-     * O diagrama mostra a Instituição a receber o pedido e a passá-lo ao Aluno.
-     */
+
     public boolean registarInscricao(Curso curso, Aluno aluno) {
         if (curso != null && aluno != null) {
-            // A Instituição delega no Aluno (como mostra a seta para a direita no diagrama)
+
             return aluno.registarInscricao(curso);
         }
         return false;
     }
 
-    // Método auxiliar para buscar aluno por email (Passo 1.1 do diagrama)
     public Aluno getAlunoPorEmail(String email) {
         for (Aluno a : lstAlunos) {
             if (a.getEmail().equalsIgnoreCase(email)) return a;
@@ -451,11 +438,11 @@ public class Instituicao
 // UC10
 
     public Aluno obterAlunoPorEmail(String email) {
-        // Loop sobre arrAlu (Passo 1.1.1.1)
+
         for (Aluno alu : lstAlunos) {
-            // Passo 1.1.1.2: getEmail()
+
             if (alu.getEmail().equalsIgnoreCase(email)) {
-                return alu; // setFlag(true) implícito no return
+                return alu;
             }
         }
         return null;
@@ -463,7 +450,7 @@ public class Instituicao
 
     public boolean registaAnulacao(Curso curso, Aluno aluno) {
         if (curso != null && aluno != null) {
-            // Delega no Aluno a responsabilidade de mudar o estado da inscrição
+
             return aluno.registarAnulacao(curso);
         }
         return false;
@@ -480,36 +467,31 @@ public class Instituicao
         return null;
     }
 
-    /**
-     * Passo 1.1.2: getCursosDoFormador(formador)
-     * Implementa o LOOP e o ALT do diagrama.
-     */
     public List<Curso> getCursosDoFormador(Formador formador) {
-        // 1.1.2.1: create()
+
         List<Curso> meusCursos = new ArrayList<>();
 
         if (formador == null) return meusCursos;
 
-        // Loop Principal (Para cada curso na instituição)
+
         for (Curso curso : lstCursos) {
             boolean adicionado = false;
 
-            // 1.1.2.2: isResponsavel(formador)
+
             if (curso.isResponsavel(formador)) {
-                // 1.1.2.3: add(cur)
                 meusCursos.add(curso);
                 adicionado = true;
             }
 
-            // Se ainda não foi adicionado, verificamos os módulos (O bloco ELSE/LOOP do diagrama)
+
             if (!adicionado) {
-                // Loop Interno (Para cada módulo)
+
                 for (Modulo m : curso.getListaModulos()) {
-                    // 1.1.2.4: getFormadorResponsavel()
+
                     if (m.getFormadorResponsavel() != null &&
                             m.getFormadorResponsavel().equals(formador)) {
 
-                        // 1.1.2.5: add(cur) - Adiciona e para de procurar neste curso
+
                         meusCursos.add(curso);
                         break;
                     }
@@ -524,19 +506,15 @@ public class Instituicao
     public List<Aluno> getAlunosDoCurso(Curso curso) {
         List<Aluno> alunosDoCurso = new ArrayList<>();
 
-        // Percorre a lista global de alunos
+
         for (Aluno aluno : this.lstAlunos) {
-            // Verifica se o aluno tem alguma inscrição nesse curso
+
             if (aluno.temInscricaoNoCurso(curso)) {
                 alunosDoCurso.add(aluno);
             }
         }
         return alunosDoCurso;
     }
-
-
-
-
 }
 
 

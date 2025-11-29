@@ -5,20 +5,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Modulo implements Calculavel {
-    private String codigo; // Sequencial, gerado automaticamente
+    private String codigo;
     private String titulo;
     private double cargaHoraria;
     private LocalDate dataInicio;
     private LocalDate dataConclusao;
     private Formador formadorResponsavel;
-    private double ponderacao; // Ponderação sobre a nota final do curso (valor percentual)
+    private double ponderacao;
 
-    private List<SessaoModulo> lstSessoes; // Horário por sessão (requisito 'c')
-    private List<Classificacao> lstClassificacoes; // Associação com a classificação do aluno
+    private List<SessaoModulo> lstSessoes;
+    private List<Classificacao> lstClassificacoes;
     private static int contador = 1;
 
     public Modulo(String codigo, String titulo, double cargaHoraria, LocalDate dataInicio, LocalDate dataConclusao, Formador formadorResponsavel, double ponderacao, List<SessaoModulo>lstSessoes, List<Classificacao> lstClassificacoes) {
-        this.codigo = gerarCodigo(); // Lógica de geração de código
+        this.codigo = gerarCodigo();
         this.titulo = titulo;
         this.cargaHoraria = cargaHoraria;
         this.dataInicio = dataInicio;
@@ -26,21 +26,32 @@ public class Modulo implements Calculavel {
         this.formadorResponsavel = formadorResponsavel;
         setPonderacao(ponderacao);
         this.lstSessoes = (lstSessoes != null) ? lstSessoes : new ArrayList<>();
-        this.lstClassificacoes = new ArrayList<>(); // A classificação é definida mais tarde
+        this.lstClassificacoes = new ArrayList<>();
     }
 
     private String gerarCodigo() {
         return "MOD" + System.currentTimeMillis();
     }
 
-    // Adiciona uma sessão, garantindo o mínimo de 3 sessões (requisito 'c')
-    public void adicionarSessao(SessaoModulo sessao) {
-        if (sessao != null) {
-            this.lstSessoes.add(sessao);
+    public boolean adicionarSessao(SessaoModulo sessao) {
+
+        LocalDate dataSessao = sessao.getDataHoraInicio().toLocalDate();
+
+
+        if (dataSessao.isBefore(this.dataInicio)) {
+            throw new IllegalArgumentException("A data da sessão (" + dataSessao + ") é anterior ao início do módulo.");
         }
+
+        if (dataSessao.isAfter(this.dataConclusao)) {
+            throw new IllegalArgumentException("A data da sessão (" + dataSessao + ") é posterior ao fim do módulo.");
+        }
+
+
+
+        return this.lstSessoes.add(sessao);
     }
 
-    // Verificação de requisito de mínimo de sessões (pode ser feita no Controller/Service)
+
     public boolean valida() {
         if (lstSessoes.size()<3){
             throw new IllegalStateException("O módulo deve ter pelo menos 3 sessões.");
@@ -54,10 +65,10 @@ public class Modulo implements Calculavel {
         }
     }
 
-    // Implementação da interface Calculavel (a nota do módulo é a nota da Classificacao associada)
+
     @Override
     public double calcularNota() {
-        // Exemplo: Retornar a média das notas lançadas (apenas ilustrativo)
+
         if (lstClassificacoes.isEmpty()) return 0.0;
 
         double soma = 0;
@@ -73,23 +84,22 @@ public class Modulo implements Calculavel {
                 return c.getNota();
             }
         }
-        return null; // Representa "Pendente"
+        return null;
     }
 
     public void lancarClassificacao(Aluno aluno, double nota) {
-        // 1. Tentar encontrar classificação existente (Loop do diagrama)
+
         for (Classificacao c : lstClassificacoes) {
             if (c.getAluno().equals(aluno)) {
-                // Caixa "Alt" -> Existe
+
                 c.setNota(nota);
                 return;
             }
         }
 
-        // Caixa "Alt" -> Nova Classificação
-        // Passo 4.1.1.3: create()
+
         Classificacao novaClassificacao = new Classificacao(aluno, this, nota);
-        // Passo 4.1.1.4: add()
+
         lstClassificacoes.add(novaClassificacao);
     }
 

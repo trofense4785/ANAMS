@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 public class RegistarFormador_Controller {
     private final Instituicao instituicao;
-    private Formador formador; // Entidade em estado
+    private Formador formador;
 
     public RegistarFormador_Controller(Instituicao instituicao) {
         this.instituicao = Instituicao.getInstance();
@@ -17,8 +17,6 @@ public class RegistarFormador_Controller {
     public void novoFormador(String nome, LocalDate dataNascimento, String cc, String email, String contacto, String areaFormacao) {
         this.formador = instituicao.novoFormador(nome, dataNascimento, cc, email, contacto, areaFormacao);
 
-        // Opcional: Validar logo aqui para dar feedback imediato de duplicados
-        // instituicao.validaFormador(this.formador);
     }
 
 
@@ -27,6 +25,18 @@ public class RegistarFormador_Controller {
             return instituicao.registarFormador(this.formador);
         }
         return false;
+    }
+
+    public boolean validarCCUnico(String cc) {
+        return !instituicao.existeFormadorComCC(cc);
+    }
+
+    public boolean validarEmailUnico(String email) {
+        return !instituicao.existeFormadorComEmail(email);
+    }
+
+    public boolean validarContactoUnico(String contacto) {
+        return !instituicao.existeFormadorComContacto(contacto);
     }
 
     public String getDadosFormador() {

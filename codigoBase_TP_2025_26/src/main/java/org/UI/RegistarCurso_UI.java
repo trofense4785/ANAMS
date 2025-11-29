@@ -20,6 +20,7 @@ public class RegistarCurso_UI {
     private final Scanner sc;
 
     public RegistarCurso_UI() {
+
         this.controller = new RegistarCurso_Controller(Instituicao.getInstance());
         this.sc = new Scanner(System.in);
     }
@@ -40,25 +41,32 @@ public class RegistarCurso_UI {
             System.out.print("Descrição: ");
             String descricao = sc.nextLine();
 
-            LocalDate dataInicio = lerData("Data de Início (AAAA-MM-DD): ");
-            LocalDate dataFim = lerData("Data de Fim (AAAA-MM-DD): ");
+            LocalDate dataInicio = null;
+            LocalDate dataFim = null;
+            while (true) {
+                dataInicio = lerData("Data de Início (AAAA-MM-DD): ");
+                dataFim = lerData("Data de Fim (AAAA-MM-DD): ");
 
-            // Seleção do Tipo de Curso
+                if (dataFim.isBefore(dataInicio)) {
+                    System.out.println(" Erro: Data de fim anterior à data de início.");
+                } else {
+                    break;
+                }
+            }
+
             TipoCurso tipoSelecionado = selecionarTipoCurso();
-            if (tipoSelecionado == null) return; // Cancelou ou não existem tipos
+            if (tipoSelecionado == null) return;
 
-            // Cria o cabeçalho do curso em memória
             controller.novoCurso(titulo, sigla, tipoSelecionado, descricao, dataInicio, dataFim);
             System.out.println(">> Cabeçalho do curso criado com sucesso.");
 
-            // --- FASE 2: ADICIONAR RESPONSÁVEIS (IT2) ---
             adicionarResponsaveisCurso();
 
-            // --- FASE 3: ADICIONAR MÓDULOS (LOOP) ---
             boolean continuar = true;
             while (continuar) {
                 System.out.println("\n--- Adicionar Módulo ---");
-                adicionarModulo();
+
+                adicionarModulo(dataInicio, dataFim);
 
                 System.out.print("\nDeseja adicionar outro módulo? (S/N): ");
                 String resp = sc.nextLine();
@@ -67,7 +75,6 @@ public class RegistarCurso_UI {
                 }
             }
 
-            // --- FASE 4: CONFIRMAÇÃO FINAL ---
             System.out.println("\n--- Resumo do Registo ---");
             System.out.println("Curso: " + titulo + " (" + sigla + ")");
             System.out.println("Módulos adicionados. Validação de estado pendente.");
@@ -75,28 +82,27 @@ public class RegistarCurso_UI {
             System.out.print("Confirma o registo do curso? (S/N): ");
             if (sc.nextLine().equalsIgnoreCase("S")) {
                 if (controller.registarCurso()) {
-                    System.out.println("\n✅ SUCESSO: Curso registado e pronto a iniciar.");
+                    System.out.println("\n SUCESSO: Curso registado e pronto a iniciar.");
                 } else {
-                    System.out.println("\n❌ ERRO: Falha ao registar (Verifique se tem pelo menos 1 módulo).");
+                    System.out.println("\n ERRO: Falha ao registar (Verifique se tem pelo menos 1 módulo).");
                 }
             } else {
-                System.out.println("\n⚠️ Operação cancelada.");
+                System.out.println("\n Operação cancelada.");
             }
 
         } catch (IllegalArgumentException e) {
-            System.out.println("\n❌ ERRO: " + e.getMessage());
+            System.out.println("\n ERRO: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("\n❌ Ocorreu um erro inesperado: " + e.getMessage());
+            System.out.println("\n Ocorreu um erro inesperado: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    // --- MÉTODOS AUXILIARES ---
 
     private TipoCurso selecionarTipoCurso() {
         List<TipoCurso> tipos = controller.getTiposCurso();
         if (tipos.isEmpty()) {
-            System.out.println("❌ Erro: Não existem Tipos de Curso definidos. Crie um primeiro (UC2).");
+            System.out.println(" Erro: Não existem Tipos de Curso definidos. Crie um primeiro (UC2).");
             return null;
         }
 
@@ -128,7 +134,7 @@ public class RegistarCurso_UI {
         }
     }
 
-    private void adicionarModulo() {
+    private void adicionarModulo(LocalDate cursoInicio, LocalDate cursoFim) {
         try {
             System.out.print("Título do Módulo: ");
             String titulo = sc.nextLine();
@@ -136,18 +142,38 @@ public class RegistarCurso_UI {
             double cargaHoraria = lerDouble("Carga Horária Total: ");
             double ponderacao = lerDouble("Ponderação (0-100%): ");
 
-            LocalDate dataInicio = lerData("Data Início Módulo: ");
-            LocalDate dataFim= lerData("Data Fim Módulo: ");
+            LocalDate dataInicio = null;
+            while (true) {
+                dataInicio = lerData("Data Início Módulo: ");
+                if (dataInicio.isBefore(cursoInicio)) {
+                    System.out.println(" Erro: O módulo não pode começar antes do curso (" + cursoInicio + ").");
+                } else if (dataInicio.isAfter(cursoFim)) {
+                    System.out.println(" Erro: O módulo não pode começar depois do fim do curso.");
+                } else {
+                    break;
+                }
+            }
 
-            // Selecionar Formador do Módulo
+            LocalDate dataFim = null;
+            while (true) {
+                dataFim = lerData("Data Fim Módulo: ");
+                if (dataFim.isAfter(cursoFim)) {
+                    System.out.println(" Erro: O módulo não pode terminar depois do curso (" + cursoFim + ").");
+                } else if (dataFim.isBefore(dataInicio)) {
+                    System.out.println(" Erro: Fim do módulo anterior ao início.");
+                } else {
+                    break;
+                }
+            }
+            // -------------------------------
+
             Formador formadorResponsavel = selecionarFormador("Selecione o Formador do Módulo:");
             if (formadorResponsavel == null) return;
 
-            // Recolher Sessões (Requisito: Minimo 3)
-            List<SessaoModulo> lstSessoes = recolherSessoes();
 
-            // Enviar para o Controller
-            // Nota: O código sequencial é gerado automaticamente no Controller, não pedimos aqui
+            List<SessaoModulo> lstSessoes = recolherSessoes(dataInicio, dataFim);
+
+            // Enviar para o Controller (Mantive a tua chamada original)
             boolean sucesso = controller.adicionarModulo(
                     titulo, cargaHoraria, dataInicio, dataFim, formadorResponsavel, ponderacao, lstSessoes
             );
@@ -155,11 +181,12 @@ public class RegistarCurso_UI {
             if (sucesso) System.out.println(">> Módulo adicionado com sucesso.");
 
         } catch (Exception e) {
-            System.out.println("❌ Erro ao adicionar módulo: " + e.getMessage());
+            System.out.println(" Erro ao adicionar módulo: " + e.getMessage());
         }
     }
 
-    private List<SessaoModulo> recolherSessoes() {
+
+    private List<SessaoModulo> recolherSessoes(LocalDate modInicio, LocalDate modFim) {
         List<SessaoModulo> lista = new ArrayList<>();
         System.out.println(">> Definição de Sessões (Mínimo 3 obrigatório)");
 
@@ -170,14 +197,41 @@ public class RegistarCurso_UI {
                 if (!sc.nextLine().equalsIgnoreCase("S")) break;
             }
 
-            System.out.println("SESSION #" + (lista.size() + 1));
-            LocalDate dia = lerData("Dia da aula: ");
+            System.out.println("SESSAO #" + (lista.size() + 1));
+
+            LocalDate dia = null;
+            while(true) {
+                dia = lerData("Dia da aula: ");
+
+                if (dia.isBefore(modInicio) || dia.isAfter(modFim)) {
+                    System.out.println(" Erro: A sessão tem de ser entre " + modInicio + " e " + modFim);
+                }
+
+                else if (!lista.isEmpty()) {
+
+                    LocalDate dataAnterior = lista.get(lista.size() - 1).getDataHoraInicio().toLocalDate();
+
+                    if (dia.isBefore(dataAnterior)) {
+                        System.out.println(" Erro: Cronologia incorreta!");
+                        System.out.println(" A nova sessão não pode ser anterior à sessão #" + lista.size() + " (" + dataAnterior + ").");
+                    } else {
+                        break;
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+
             int hora = lerInteiro("Hora (0-23): ");
             int duracao = lerInteiro("Duração (horas): ");
             System.out.print("Sala: ");
             String sala = sc.nextLine();
 
             LocalDateTime dataHora = dia.atTime(hora, 0);
+
+
+
             lista.add(new SessaoModulo(dataHora, duracao, sala));
         }
         return lista;
@@ -186,7 +240,7 @@ public class RegistarCurso_UI {
     private Formador selecionarFormador(String msg) {
         List<Formador> lista = controller.getListaFormadores();
         if (lista.isEmpty()) {
-            System.out.println("❌ Não existem formadores registados.");
+            System.out.println(" Não existem formadores registados.");
             return null;
         }
         System.out.println("\n" + msg);

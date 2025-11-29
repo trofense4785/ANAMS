@@ -10,10 +10,7 @@ import java.io.IOException;
 import org.Model.Instituicao;
 import utils.Utils;
 
-/**
- *
- * @author Dulce Mota <mdm@isep.ipp.pt>
- */
+
 public class MenuInicial_UI
 {
     private Instituicao instituicao;

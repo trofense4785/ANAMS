@@ -22,19 +22,16 @@ public class MenuAlu_UI {
     }
 
     public void run() {
-        // --- PASSO 1: LOGIN DO ALUNO ---
         if (!fazerLogin()) {
             return;
         }
 
-        // --- PASSO 2: MENU DE FUNCIONALIDADES ---
         String opcao;
         do {
             System.out.println("\n###### MENU ALUNO ######");
             System.out.println("1. Inscrever em Curso (UC9)");
             System.out.println("2. Anular Inscrição (UC10)");
             System.out.println("3. Consultar Minhas Notas (UC14)");
-            // REMOVIDO: 4. Consultar Lista Geral (UC6) - Exclusivo do CA
             System.out.println("------------------------");
             System.out.println("0. Logout / Voltar");
             System.out.print("Escolha uma opção: ");
@@ -61,7 +58,6 @@ public class MenuAlu_UI {
         } while (!opcao.equals("0"));
     }
 
-    // --- Lógica de Autenticação de Aluno ---
     private boolean fazerLogin() {
         System.out.println("\n--- Login Aluno ---");
         System.out.print("Email: ");
@@ -69,23 +65,20 @@ public class MenuAlu_UI {
         System.out.print("Password: ");
         String pass = sc.nextLine();
 
-        // Procura na lista de alunos da Instituição
         for (Aluno a : instituicao.getListaAlunos()) {
             if (a.getEmail().equalsIgnoreCase(email)) {
 
-                // Verifica password
                 if (a.getCredenciais() != null &&
                         a.getCredenciais().getPassword().equals(pass)) {
 
-                    // Sucesso: Guarda na sessão
                     Sessao.getInstance().login(a.getEmail());
-                    System.out.println("✅ Bem-vindo, Aluno " + a.getNome() + "!");
+                    System.out.println(" Bem-vindo, Aluno " + a.getNome() + "!");
                     return true;
                 }
             }
         }
 
-        System.out.println("❌ Credenciais inválidas ou aluno não encontrado.");
+        System.out.println(" Credenciais inválidas ou aluno não encontrado.");
         return false;
     }
 }

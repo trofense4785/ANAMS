@@ -3,21 +3,20 @@ package org.Model;
 import java.time.LocalDate;
 
 public class Candidatura {
-    // Dados obrigatórios
     private String nome;
     private LocalDate dataNascimento;
-    private String habilitacoes; // "Licenciatura", "12º ano", etc.
+    private String habilitacoes;
     private String email;
     private String cc;
     private String genero;
 
-    // Dados de gestão
+
     private LocalDate dataSubmissao;
-    private Credenciais credenciais; // Geradas após submissão
+    private Credenciais credenciais;
     private int estado;
     private String justificacao;
     private LocalDate dataDecisao;
-    private boolean aceite; // true = Aceite, false = Rejeitada
+    private boolean aceite;
 
 
     public Candidatura(String nome, LocalDate dataNascimento, String habilitacoes, String email, String cc, String genero) {
@@ -28,18 +27,18 @@ public class Candidatura {
         this.cc = cc;
         this.genero = genero;
 
-        this.dataSubmissao = LocalDate.now(); // Regista a data atual
-        this.estado = 0; // Inicialmente "Submetida"
+        this.dataSubmissao = LocalDate.now();
+        this.estado = 0;
     }
 
-    // Validação Local (Formato dos dados)
+
     public boolean valida() {
         if (nome == null || nome.isEmpty()) throw new IllegalArgumentException("Nome obrigatório.");
         if (cc == null || cc.length() != 9) throw new IllegalArgumentException("CC inválido (deve ter 9 dígitos).");
         if (email == null || !email.contains("@")) throw new IllegalArgumentException("Email inválido.");
         if (dataNascimento == null) throw new IllegalArgumentException("Data de nascimento obrigatória.");
 
-        // Verificar maioridade (Opcional, mas comum)
+
         if (dataNascimento.plusYears(18).isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("O candidato deve ser maior de idade.");
         }
@@ -58,7 +57,7 @@ public class Candidatura {
         this.aceite = aceite;
         this.justificacao = justificacao;
         this.dataDecisao = dataDecisao;
-        this.estado = 1; // Marca como tratada
+        this.estado = 1;
     }
 
     public int getEstado() {
@@ -75,7 +74,7 @@ public class Candidatura {
 
 
 
-    // Getters para validação global
+
     public String getCc() { return cc; }
     public String getEmail() { return email; }
     public String getNome() { return nome; }

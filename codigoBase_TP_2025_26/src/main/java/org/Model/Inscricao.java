@@ -6,7 +6,7 @@ import java.util.UUID;
 public class Inscricao {
     private String idInscricao;
     private LocalDate dataRealizacao;
-    private String estado; // "ativa", "cancelada", "concluída"
+    private String estado;
 
     private Curso curso;
     private Aluno aluno;
@@ -15,7 +15,7 @@ public class Inscricao {
         this.aluno = aluno;
         this.curso = curso;
 
-        // Requisitos IT2 (Alínea d): Identificador único, data e estado
+
         this.idInscricao = "INS-" + UUID.randomUUID().toString().substring(0, 8);
         this.dataRealizacao = LocalDate.now();
         this.estado = "ativa";

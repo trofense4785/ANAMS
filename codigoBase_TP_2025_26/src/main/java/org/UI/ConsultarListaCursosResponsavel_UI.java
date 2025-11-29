@@ -21,8 +21,7 @@ public class ConsultarListaCursosResponsavel_UI {
         System.out.println("========================================");
 
         try {
-            // 1. Obter a lista de cursos filtrada pelo Controller
-            // (O Controller já verifica a Sessão e aplica a lógica de Coordenador/Professor)
+
             List<String> meusCursos = controller.getMeusCursos();
 
             if (meusCursos.isEmpty()) {
@@ -32,21 +31,17 @@ public class ConsultarListaCursosResponsavel_UI {
                 return;
             }
 
-            // 2. Mostrar a Lista
             System.out.println("Cursos sob a sua responsabilidade:");
             for (int i = 0; i < meusCursos.size(); i++) {
                 System.out.println((i + 1) + ". " + meusCursos.get(i));
             }
 
-            // 3. Opção de ver detalhes
             int opcao = lerInteiro("Selecione um curso para ver detalhes (0 para sair): ");
 
             if (opcao > 0 && opcao <= meusCursos.size()) {
-                // Extrair a sigla da linha selecionada para pedir detalhes
                 String linha = meusCursos.get(opcao - 1);
                 String sigla = extrairSigla(linha);
 
-                // 4. Obter e mostrar detalhes
                 String detalhes = controller.getDadosCurso(sigla);
                 System.out.println("\n--- Detalhes do Curso ---");
                 System.out.println(detalhes);
@@ -54,10 +49,9 @@ public class ConsultarListaCursosResponsavel_UI {
             }
 
         } catch (IllegalStateException e) {
-            // Erro de Sessão (ninguém logado ou não é formador)
-            System.out.println("\n❌ ERRO DE ACESSO: " + e.getMessage());
+            System.out.println("\n ERRO DE ACESSO: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("\n❌ Ocorreu um erro: " + e.getMessage());
+            System.out.println("\n Ocorreu um erro: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -65,7 +59,6 @@ public class ConsultarListaCursosResponsavel_UI {
         sc.nextLine();
     }
 
-    // --- MÉTODOS AUXILIARES ---
 
     private int lerInteiro(String msg) {
         while (true) {
@@ -78,24 +71,18 @@ public class ConsultarListaCursosResponsavel_UI {
         }
     }
 
-    /**
-     * Extrai a sigla da string formatada (ex: "[MAT] Matematica" -> "MAT")
-     * Usa a lógica simples de split que aprendeste.
-     */
+
     private String extrairSigla(String textoCurso) {
         try {
-            // O formato é: "Curso: Titulo (SIGLA) | Estado..."
-            // Vamos procurar a última abertura de parênteses "(" e o último fecho ")"
             int inicio = textoCurso.lastIndexOf("(");
             int fim = textoCurso.lastIndexOf(")");
 
             if (inicio != -1 && fim != -1 && inicio < fim) {
-                // Extrai o que está lá dentro (ex: "JAV01")
                 return textoCurso.substring(inicio + 1, fim);
             }
         } catch (Exception e) {
             System.out.println("Erro ao ler sigla: " + e.getMessage());
         }
-        return ""; // Retorna vazio se falhar
+        return "";
     }
 }

@@ -31,7 +31,7 @@ public class Main {
             MenuInicial_UI menuInicial = new MenuInicial_UI(instituicao);
             menuInicial.run();
         } catch (Exception e) {
-            System.out.println("❌ Erro fatal na aplicação: " + e.getMessage());
+            System.out.println(" Erro fatal na aplicação: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -43,14 +43,13 @@ public class Main {
         System.out.println(">> A carregar dados de teste...");
 
         try {
-             //--- 1. Registar Coordenador Académico (CA) ---
+
             CA ca = new CA("Ana Silva", "ana@isep.ipp.pt", "123456789", "ADM", "912345678");
-             //Define credenciais manuais para ser fácil testares
+
             instituicao.registarCA(ca);
             ca.setCredenciais(new Credenciais("admin", "admin"));
             System.out.println("   + CA criado (Login: admin / Pass: admin)");
 
-            // --- 2. Criar Tipos de Curso ---
             TipoCurso tipo1 = instituicao.novoTipoCurso("IT", "Tecnologia da Informação");
             instituicao.registarTipoCurso(tipo1);
 
@@ -58,42 +57,39 @@ public class Main {
             instituicao.registarTipoCurso(tipo2);
             System.out.println("   + Tipos de Curso criados (IT, GEST)");
 
-            // --- 3. Registar Formadores ---
+
             Formador f1 = new Formador("João Professor", LocalDate.of(1980, 5, 20), "987654321", "joao@isep.ipp.pt", "911222333", "Mestrado em Engenharia");
-            // O registo gera ID e credenciais. Vamos forçar uma pass conhecida para teste.
+
             instituicao.registarFormador(f1);
-            // Sobrescreve a pass aleatória por uma fácil
-            f1.setCredenciais(new Credenciais("joao@isep.ipp.pt", "1234"));
+
+
             System.out.println("   + Formador criado (Login: joao@isep.ipp.pt / Pass: 1234)");
 
-            // --- 4. Criar um Curso com Módulos ---
+
             Curso c1 = instituicao.novoCurso("Java Avançado", "JAV01", tipo1, "Curso de backend", LocalDate.now().plusDays(10), LocalDate.now().plusDays(40));
 
-            // Adicionar Módulo ao Curso
-            // (Nota: Precisamos passar listas vazias para sessoes e classificacoes)
             Modulo m1 = c1.novoModulo("M-1", "Intro ao Java", 10, LocalDate.now().plusDays(12), LocalDate.now().plusDays(15), f1, 50, new ArrayList<>(), new ArrayList<>());
-            // Adiciona sessões para validar (Mínimo 3)
             m1.adicionarSessao(new SessaoModulo(java.time.LocalDateTime.now().plusDays(12), 2, "B203"));
             m1.adicionarSessao(new SessaoModulo(java.time.LocalDateTime.now().plusDays(13), 2, "B203"));
             m1.adicionarSessao(new SessaoModulo(java.time.LocalDateTime.now().plusDays(14), 2, "B203"));
 
-            c1.addModulo(m1); // Adiciona módulo ao curso
+            c1.addModulo(m1);
 
-            // Define o formador como responsável do curso também
+
             c1.addResponsavel(f1);
 
             instituicao.registarCurso(c1);
             System.out.println("   + Curso criado: Java Avançado (JAV01) - Estado: A Iniciar");
 
-            // --- 5. Criar um Aluno (Simulação de candidatura aceite) ---
+
             Aluno a1 = new Aluno("Pedro Aluno", "pedro@isep.ipp.pt", "111222333", LocalDate.of(2000, 1, 1));
             a1.setCodigoAluno("AL-2025-1");
             a1.setCredenciais(new Credenciais("pedro@isep.ipp.pt", "1234"));
-            instituicao.getListaAlunos().add(a1); // Assume que tens getter para a lista na Instituição
+            instituicao.getListaAlunos().add(a1);
             System.out.println("   + Aluno criado (Login: pedro@isep.ipp.pt / Pass: 1234)");
 
         } catch (Exception e) {
-            System.out.println("⚠️ Aviso no Bootstrap: " + e.getMessage());
+            System.out.println("Jo Aviso no Bootstrap: " + e.getMessage());
         }
         System.out.println(">> Sistema inicializado.\n");
     }

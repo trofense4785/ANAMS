@@ -13,7 +13,7 @@ public class Aluno {
 
     private Credenciais credenciais;
 
-    // CORREÇÃO: Usar apenas UMA lista para as inscrições
+
     private List<Inscricao> minhasInscricoes;
 
     private List<Anulacao> minhasAnulacoes;
@@ -28,7 +28,7 @@ public class Aluno {
         this.minhasAnulacoes = new ArrayList<>();
     }
 
-    // --- MÉTODOS DE INSCRIÇÃO (UC9) ---
+
 
     public boolean registarInscricao(Curso curso) {
         if (estaInscrito(curso)) return false;
@@ -41,7 +41,7 @@ public class Aluno {
         return false;
     }
 
-    // Sinónimo do anterior (para compatibilidade com outros controllers)
+
     public boolean inscreverEmCurso(Curso curso) {
         return registarInscricao(curso);
     }
@@ -53,7 +53,7 @@ public class Aluno {
         return false;
     }
 
-    // --- MÉTODOS DE ANULAÇÃO (UC10) ---
+
 
     public List<String> obterCursosInscritosAtivos() {
         List<String> listaCursos = new ArrayList<>();
@@ -67,7 +67,7 @@ public class Aluno {
     }
 
     public Inscricao obterInscricao(String idInscricao) {
-        for (Inscricao ins : minhasInscricoes) { // Usa a lista correta
+        for (Inscricao ins : minhasInscricoes) {
             if (ins.getIdInscricao().equals(idInscricao)) {
                 return ins;
             }
@@ -95,7 +95,7 @@ public class Aluno {
         return false;
     }
 
-    // --- MÉTODOS DE CONSULTA (UC12 / UC14) ---
+
 
     public boolean temInscricaoNoCurso(Curso c) {
         for (Inscricao ins : minhasInscricoes) {
@@ -136,7 +136,7 @@ public class Aluno {
         return dados;
     }
 
-    // --- GETTERS E SETTERS ---
+
 
     public void setCodigoAluno(String codigo) { this.codigoAluno = codigo; }
     public void setCredenciais(Credenciais c) { this.credenciais = c; }

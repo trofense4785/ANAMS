@@ -17,6 +17,10 @@ public class AdicionarModuloCurso_UI {
     private final AdicionarModuloCurso_Controller controller;
     private final Scanner sc;
 
+
+    private LocalDate tempInicioModulo;
+    private LocalDate tempFimModulo;
+
     public AdicionarModuloCurso_UI() {
         this.controller = new AdicionarModuloCurso_Controller();
         this.sc = new Scanner(System.in);
@@ -28,21 +32,19 @@ public class AdicionarModuloCurso_UI {
         System.out.println("========================================");
 
         try {
-            // --- PASSO 1: SELECIONAR CURSO ---
+
             if (!selecionarCurso()) return;
 
-            // --- PASSO 2: DADOS BÁSICOS DO MÓDULO ---
+
             recolherDadosBasicos();
 
-            // --- PASSO 3: DEFINIR SESSÕES (Horário) ---
-            // O sistema valida salas ocupadas aqui
+
             recolherSessoes();
 
-            // --- PASSO 4: SELECIONAR FORMADOR ---
-            // O sistema valida sobreposição de horários aqui
+
             if (!selecionarFormador()) return;
 
-            // --- PASSO 5: CONFIRMAÇÃO FINAL ---
+
             System.out.println("\n--- Resumo do Módulo ---");
             System.out.println("Curso: " + controller.getCursoSelecionado().getTitulo());
             System.out.println("Módulo pronto a gravar.");
@@ -50,18 +52,18 @@ public class AdicionarModuloCurso_UI {
             System.out.print("Confirma a adição deste módulo? (S/N): ");
             if (sc.nextLine().equalsIgnoreCase("S")) {
                 if (controller.adicionarModuloAoCurso()) {
-                    System.out.println("\n✅ SUCESSO: Módulo adicionado ao curso.");
+                    System.out.println("\n SUCESSO: Módulo adicionado ao curso.");
                 } else {
-                    System.out.println("\n❌ ERRO: Falha na gravação (Verifique ponderações ou regras do curso).");
+                    System.out.println("\n ERRO: Falha na gravação (Verifique ponderações ou regras do curso).");
                 }
             } else {
-                System.out.println("\n⚠️ Operação cancelada.");
+                System.out.println("\n Operação cancelada.");
             }
 
         } catch (IllegalArgumentException | IllegalStateException e) {
-            System.out.println("\n❌ ERRO: " + e.getMessage());
+            System.out.println("\n ERRO: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("\n❌ Ocorreu um erro inesperado: " + e.getMessage());
+            System.out.println("\n Ocorreu um erro inesperado: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -69,13 +71,13 @@ public class AdicionarModuloCurso_UI {
         sc.nextLine();
     }
 
-    // --- MÉTODOS AUXILIARES ---
+
 
     private boolean selecionarCurso() {
-        List<Curso> cursos = controller.getCursosDisponiveis(); // Só mostra "A Iniciar"
+        List<Curso> cursos = controller.getCursosDisponiveis();
 
         if (cursos.isEmpty()) {
-            System.out.println("ℹ️ Não existem cursos disponíveis para adicionar módulos (Estado 'A Iniciar').");
+            System.out.println(" Não existem cursos disponíveis para adicionar módulos (Estado 'A Iniciar').");
             return false;
         }
 
@@ -95,16 +97,53 @@ public class AdicionarModuloCurso_UI {
 
     private void recolherDadosBasicos() {
         System.out.println("\n--- Dados do Novo Módulo ---");
+
+
+        Curso curso = controller.getCursoSelecionado();
+        LocalDate limiteInicioCurso = curso.getDataInicio();
+        LocalDate limiteFimCurso = curso.getDataTermino();
+
+        System.out.println(" Limites do Curso: " + limiteInicioCurso + " até " + limiteFimCurso);
+
         System.out.print("Título: ");
         String titulo = sc.nextLine();
 
         double cargaHoraria = lerDouble("Carga Horária: ");
         double ponderacao = lerDouble("Ponderação (0-100%): ");
 
-        LocalDate dataInicio = lerData("Data Início (AAAA-MM-DD): ");
-        LocalDate dataFim = lerData("Data Fim (AAAA-MM-DD): ");
 
-        // Cria o módulo provisório no Controller
+        LocalDate dataInicio = null;
+        while (true) {
+            dataInicio = lerData("Data Início Módulo (AAAA-MM-DD): ");
+
+            if (dataInicio.isBefore(limiteInicioCurso)) {
+                System.out.println(" Erro: O módulo não pode começar antes do curso (" + limiteInicioCurso + ").");
+            } else if (dataInicio.isAfter(limiteFimCurso)) {
+                System.out.println(" Erro: O início do módulo não pode ser depois do fim do curso.");
+            } else {
+                break;
+            }
+        }
+
+
+        LocalDate dataFim = null;
+        while (true) {
+            dataFim = lerData("Data Fim Módulo (AAAA-MM-DD): ");
+
+            if (dataFim.isAfter(limiteFimCurso)) {
+                System.out.println(" Erro: O módulo não pode terminar depois do curso (" + limiteFimCurso + ").");
+            } else if (dataFim.isBefore(dataInicio)) {
+                System.out.println(" Erro: A data de fim tem de ser posterior à data de início.");
+            } else {
+                break;
+            }
+        }
+
+
+        this.tempInicioModulo = dataInicio;
+        this.tempFimModulo = dataFim;
+
+
         controller.criarModulo(titulo, cargaHoraria, dataInicio, dataFim, ponderacao);
     }
 
@@ -121,7 +160,24 @@ public class AdicionarModuloCurso_UI {
 
             try {
                 System.out.println(">> Sessão #" + (contador + 1));
-                LocalDate dia = lerData("Dia: ");
+
+
+                LocalDate dia = null;
+                boolean dataValida = false;
+
+                while (!dataValida) {
+                    dia = lerData("Dia da aula: ");
+
+                    if (dia.isBefore(this.tempInicioModulo)) {
+                        System.out.println(" Erro: A sessão não pode ser antes do início do módulo (" + this.tempInicioModulo + ").");
+                    } else if (dia.isAfter(this.tempFimModulo)) {
+                        System.out.println(" Erro: A sessão não pode ser depois do fim do módulo (" + this.tempFimModulo + ").");
+                    } else {
+                        dataValida = true; // Sai do loop
+                    }
+                }
+
+
                 int hora = lerInteiro("Hora de início (0-23): ");
                 int duracao = lerInteiro("Duração (horas): ");
                 System.out.print("Sala: ");
@@ -129,13 +185,13 @@ public class AdicionarModuloCurso_UI {
 
                 LocalDateTime dataHora = dia.atTime(hora, 0);
 
-                // Tenta adicionar ao controller -> Ele valida se a sala está livre!
+
                 controller.adicionarSessao(dataHora, duracao, sala);
-                System.out.println("   Sessão registada.");
+                System.out.println("    Sessão registada.");
                 contador++;
 
             } catch (IllegalArgumentException e) {
-                System.out.println("   ❌ Erro na sessão: " + e.getMessage());
+                System.out.println("    Erro na sessão: " + e.getMessage());
                 System.out.println("   Tente novamente.");
             }
         }
@@ -144,7 +200,7 @@ public class AdicionarModuloCurso_UI {
     private boolean selecionarFormador() {
         List<Formador> formadores = controller.getLstFormadores();
         if (formadores.isEmpty()) {
-            System.out.println("❌ Não existem formadores registados no sistema.");
+            System.out.println(" Não existem formadores registados no sistema.");
             return false;
         }
 
@@ -164,7 +220,7 @@ public class AdicionarModuloCurso_UI {
                     controller.definirFormador(f);
                     return true;
                 } catch (IllegalArgumentException e) {
-                    System.out.println("❌ " + e.getMessage());
+                    System.out.println(" " + e.getMessage());
                     System.out.println("Por favor, escolha outro formador.");
                 }
             } else {
@@ -173,15 +229,16 @@ public class AdicionarModuloCurso_UI {
         }
     }
 
-    // --- Utilitários de Leitura (Iguais aos anteriores) ---
+    // --- Utilitários de Leitura ---
 
     private LocalDate lerData(String msg) {
         while (true) {
             try {
                 System.out.print(msg);
-                return LocalDate.parse(sc.nextLine());
+                String input = sc.nextLine();
+                return LocalDate.parse(input);
             } catch (DateTimeParseException e) {
-                System.out.println("Data inválida.");
+                System.out.println("Data inválida. Use o formato AAAA-MM-DD.");
             }
         }
     }

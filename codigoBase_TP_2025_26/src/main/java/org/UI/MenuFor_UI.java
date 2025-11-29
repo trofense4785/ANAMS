@@ -7,10 +7,7 @@ import org.Model.Formador;
 import org.Model.Sessao;
 import utils.Utils;
 import org.Model.Instituicao;
-/**
- *
- * @author Dulce Mota <mdm@isep.ipp.pt>
- */
+
 public class MenuFor_UI {
 
     private Instituicao instituicao;
@@ -22,12 +19,10 @@ public class MenuFor_UI {
     }
 
     public void run() {
-        // --- PASSO 1: LOGIN DO FORMADOR ---
         if (!fazerLogin()) {
             return;
         }
 
-        // --- PASSO 2: MENU DE FUNCIONALIDADES ---
         String opcao;
         do {
             System.out.println("\n###### MENU FORMADOR ######");
@@ -42,15 +37,12 @@ public class MenuFor_UI {
 
             switch (opcao) {
                 case "1":
-                    // Consultar cursos onde é responsável ou leciona
                     new ConsultarListaCursosResponsavel_UI().run();
                     break;
                 case "2":
-                    // Ver lista de alunos (turma)
                     new ConsultarListaAlunosCurso_UI().run();
                     break;
                 case "3":
-                    // Lançar notas nos módulos
                     new RegistarClassificacao_UI().run();
                     break;
                 case "0":
@@ -66,28 +58,31 @@ public class MenuFor_UI {
     // --- Lógica de Autenticação de Formador ---
     private boolean fazerLogin() {
         System.out.println("\n--- Login Formador ---");
-        System.out.print("Username: ");
-        String email = sc.nextLine();
+        System.out.print("Username : ");
+        String inputID = sc.nextLine(); // Aqui fica "joao1458"
         System.out.print("Password: ");
-        String pass = sc.nextLine();
+        String inputPass = sc.nextLine();
 
-        // Procura na lista de formadores da Instituição
-        // (Nota: Tens de ter um getter para a lista ou um método de busca na Instituição)
         for (Formador f : instituicao.getLstFormadores()) {
-            if (f.getEmail().equalsIgnoreCase(email)) {
-                // Verifica password
-                if (f.getCredenciais() != null &&
-                        f.getCredenciais().getPassword().equals(pass)) {
+            if (f.getCredenciais() != null) {
+                // Verifica se bate certo com Username OU Email
+                boolean match = f.getCredenciais().getUsername().equals(inputID)
+                        || f.getEmail().equalsIgnoreCase(inputID);
 
-                    // Sucesso: Guarda na sessão
-                    Sessao.getInstance().login(f.getEmail());
-                    System.out.println("✅ Bem-vindo, Formador " + f.getNome() + "!");
+                if (match && f.getCredenciais().getPassword().equals(inputPass)) {
+
+                    // --- O SEGREDO ESTÁ AQUI ---
+                    // NÃO FAÇA ISTO: Sessao.getInstance().login(inputID); <- ERRADO! Guardaria "joao1458"
+
+                    // FAÇA ISTO:
+                    Sessao.getInstance().login(f.getEmail()); //  CORRETO! Guarda "joao@isep.ipp.pt"
+
+                    System.out.println(" Bem-vindo, " + f.getNome());
                     return true;
                 }
             }
         }
-
-        System.out.println("❌ Credenciais inválidas ou formador não encontrado.");
+        System.out.println(" Login falhou.");
         return false;
     }
 }

@@ -3,17 +3,16 @@ package org.Model;
 public class Classificacao {
     private Aluno aluno;
     private Modulo modulo;
-    private double nota; // Nota de 0 a 20 valores
+    private double nota;
 
     public Classificacao(Aluno aluno, Modulo modulo, double nota) {
-        // Validações básicas
         if (aluno == null || modulo == null) {
             throw new IllegalArgumentException("Aluno e Módulo são obrigatórios.");
         }
 
         this.aluno = aluno;
         this.modulo = modulo;
-        setNota(nota); // Usa o setter para validar 0-20
+        setNota(nota);
 
     }
 
@@ -24,7 +23,7 @@ public class Classificacao {
         this.nota = nota;
     }
 
-    // Getters and Setters
+
     public double getNota() { return nota; }
     public Modulo getModulo() { return modulo; }
 

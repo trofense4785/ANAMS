@@ -9,7 +9,6 @@ public class CA {
     private Credenciais credenciais;
 
     public CA(String nome, String email, String cc, String sigla, String contacto) {
-        // Validações básicas (Formatos) - Information Expert (Local)
         if (cc == null || cc.length() != 9) throw new IllegalArgumentException("CC inválido (deve ter 9 dígitos).");
         if (email == null || !email.contains("@")) throw new IllegalArgumentException("Email inválido.");
 

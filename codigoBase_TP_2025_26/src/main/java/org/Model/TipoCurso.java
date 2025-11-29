@@ -6,10 +6,7 @@
 
 package org.Model;
 
-/**
- *
- * @author Dulce Mota <mdm@isep.ipp.pt>
- */
+
 public class TipoCurso
 {  
     private String sigla;
@@ -44,7 +41,7 @@ public class TipoCurso
         return descricao;
     }
 
-    // Validação local
+
     public boolean valida() {
         if (sigla == null || sigla.trim().isEmpty()) {
             throw new IllegalArgumentException("A sigla do tipo de curso é obrigatória.");

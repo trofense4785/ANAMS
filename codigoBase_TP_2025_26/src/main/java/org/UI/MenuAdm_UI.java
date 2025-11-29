@@ -25,7 +25,6 @@ public class MenuAdm_UI {
     }
 
     public void run() {
-        // 1. Simulação de Login de Administrador
         System.out.println("\n--- Autenticação de Administrador ---");
 
         System.out.print("Username: ");
@@ -34,13 +33,12 @@ public class MenuAdm_UI {
         System.out.print("Password: ");
         String pass = sc.nextLine();
 
-        // Validação "Hardcoded" para o Super-Utilizador
         if (!username.equals("admin") || !pass.equals("admin")) {
-            System.out.println("❌ Credenciais incorretas. Acesso negado.");
+            System.out.println(" Credenciais incorretas. Acesso negado.");
             return;
         }
 
-        System.out.println("✅ Bem-vindo, Administrador.");
+        System.out.println(" Bem-vindo, Administrador.");
 
         String opcao;
         do {
